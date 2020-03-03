@@ -30,6 +30,15 @@ class TodoItem {
 		this._completed = v;
 		notify_all("modified todoitem", this);
 	}
+
+	get as_dict() {
+		return {
+			id: this.id,
+			title: this.title,
+			completed: this.completed
+		}
+	}
+
 }
 
 class App {
@@ -59,50 +68,23 @@ class App {
 class ControllerTodoItem {
 	constructor(model_ref, gui_id) {
 	  this.model_ref = model_ref
-	  this.gui_id = gui_id  // dom element has id matching model id, could be done in other ways too
-	  this.parent_gui_ref = 'ul.todo-list'
+	  this.gui_id = gui_id  // <li> data-id
+	  this.todoTemplate = Handlebars.compile($('#todo-template').html());
 	}
   
-	// need keychar ENTER to trigger this change
-	on_keychar_welcome(e) { this.welcome_model.message = $(e.target).val() }
-  
 	notify(event) {  
-		// sender's notify_all(event_name, from, data) - the 'from' and 'data' end up in event.detail dict
-
 		if (this.gui_id == undefined) {
 			// Gui element has not been created yet, so build it and inject it
 			console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
-
-			this.gui_id = this.model_ref.id  // use id of model for the gui id, can't think of a better gui ref technique
-			let li = `<li id="${this.gui_id}">${this.model_ref.title}</li>`
-			/*
-			TODO - NEED TO INSERT A PROPER TEMPLATED ITEM
-	
-			// $('.todo-list').html(this.todoTemplate(todos));
-	
-			<script id="todo-template" type="text/x-handlebars-template">
-				{{#this}}
-				<li {{#if completed}}class="completed"{{/if}} data-id="{{id}}">
-					<div class="view">
-						<input class="toggle" type="checkbox" {{#if completed}}checked{{/if}}>
-						<label>{{title}}</label>
-						<button class="destroy"></button>
-					</div>
-					<input class="edit" value="{{title}}">
-				</li>
-			{{/this}}
-			</script>
-			*/
-	
-			let $last_item = $(`${this.parent_gui_ref} li`).last()
-			$(li).insertAfter($last_item)
+			this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
+			let li = this.todoTemplate(this.model_ref.as_dict)
+			$(li).insertAfter($('ul.todo-list li').last())
 			}
 		else {
-			if (this.model_ref.id == event.detail.from.id) {
-				// Gui element already exists, simply update it
+			// Gui element already exists, simply update it
+			if (this.model_ref.id == event.detail.from.id) {  // only process specific controller - more efficient
 				console.log(`controller for ${this.model_ref.title} got notified with detail ${JSON.stringify(event.detail)}`)
-				let $li_el = $(`#${this.gui_id}`)
-				$li_el.text(this.model_ref.title)  // TODO need to make this the label inside the template
+				$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
 			}
 		}
 

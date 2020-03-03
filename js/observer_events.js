@@ -3,6 +3,12 @@
  * 
  * Subjects call this function e.g. notify_all("hello")
  * Observers should be wired up with e.g. document.addEventListener("hello", (event) => { ... })
+ * e.g.
+ *    document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
+ * where in the sender's function
+ *    notify_all(event_name, from, data)
+ * the 'from' and 'data' end up in event.detail dict. Broadcasting 'from' and 'data' are optional.
+ * 
  * 
  * The attribute event.detail can be interrogated by the receiving observer function for the 'from' and 'data' information
  * The custom event generated here is broadcast to the document element, an arbitrary decision
