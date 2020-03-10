@@ -12,11 +12,17 @@
 	app.add("title2", "id2", false)
 
 	// Wire the controllers
+	// build_todo_list_controller(app, '.todo-list')
 	for (let todo_item of app.todos)
 		visualise_todoitem(todo_item)
+	build_create_todoitem_controller(app)
 
+	// initial render
 	app.dirty_all()
 	console.log("--------------- init complete ----------")
+
+
+
 
 	// test update an existing item, as an experiment
 	setTimeout(function(){ 
@@ -25,6 +31,5 @@
 		// notify_all("modified todoitem", this, data)
 	 }, 2000);
 
-	build_create_todoitem_controller(app)
 
 })(window);

@@ -80,14 +80,76 @@ class ControllerTodoItem {
 	  this.todoTemplate = Handlebars.compile($('#todo-template').html());
 	}
   
+	bind_events($gui_li) {
+		($gui_li)
+			.on('change', '.toggle', this.toggle.bind(this))
+			.on('dblclick', 'label', this.editingMode.bind(this))
+			.on('keyup', '.edit', this.editKeyup.bind(this))
+			.on('focusout', '.edit', this.update.bind(this))
+			// .on('click', '.destroy', this.destroy.bind(this));		
+	}
+
+	toggle (e) {
+		this.model_ref.completed = !this.model_ref.completed
+		// var i = this.getIndexFromEl(e.target);  // THIS SEARCHING NOT NEEDED COS WE HAVE INDIV. CONTROLLERS
+		// this.todos[i].completed = !this.todos[i].completed;
+		// this.render();  // THIS COMPLETE REWRITE OF ALL THE TODOS NOT NEEDED COS GRANULAR UPDATE OF WHAT'S ALREADY THERE
+		console.log(this.model_ref)
+	}
+	
+	editingMode (e) {
+		var $input = $(e.target).closest('li').addClass('editing').find('.edit');
+		// puts caret at end of input
+		$input.val('');
+		$input.val(this.model_ref.title)  // sets the correct initial value
+		$input.focus();
+	}
+
+
+	editKeyup (e) {
+		if (e.which === ENTER_KEY) {
+			e.target.blur();
+		}
+
+		if (e.which === ESCAPE_KEY) {
+			$(e.target).data('abort', true).blur();
+		}
+	}
+
+	update (e) {
+		var el = e.target;
+		var $el = $(el);
+		var val = $el.val().trim();
+		
+		if ($el.data('abort')) {
+			$el.data('abort', false);
+		} else if (!val) {
+			this.destroy(e);
+			return;
+		} else {
+			// this.todos[this.getIndexFromEl(el)].title = val;
+			this.model_ref.title = val
+		}
+
+		$(e.target).closest('li').removeClass('editing')
+		// this.render();
+	}
+
+	// destroy (e) {
+	// 	this.todos.splice(this.getIndexFromEl(e.target), 1);
+	// 	// this.render();
+	// }
+
 	notify(event) {  
 		if (this.gui_id == undefined) {
 			// Gui element has not been created yet, so build it and inject it
 			console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
 			this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
 			let li = this.todoTemplate(this.model_ref.as_dict)
-			$(li).insertAfter($('ul.todo-list li').last())
-			}
+			let $res = $(li).insertAfter($('ul.todo-list li').last())
+			//console.log('inserted gui el is', $res, $res.find('div label').text())
+			this.bind_events($res)
+		}
 		else {
 			// Gui element already exists, simply update it
 			if (this.model_ref.id == event.detail.from.id) {  // only process specific controller - more efficient
@@ -124,6 +186,7 @@ class ControllerCreateTodoItem {
 	//  
 	// }
 }
+
 
 // not sure where this function should live
 function visualise_todoitem(todo_item) {
