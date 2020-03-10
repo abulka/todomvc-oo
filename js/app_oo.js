@@ -139,3 +139,15 @@ function visualise_todoitem(todo_item) {
 
 	return todo_item
 }
+
+// not sure where this function should live
+function build_create_todoitem_controller(app_model) {
+	let controller_new_input = new ControllerCreateTodoItem(app_model, '.new-todo')  // gui is the input el
+	controllers.push(controller_new_input)
+
+	// wire model changes -> controller - not relevant cos no model
+	// document.addEventListener(...)
+
+	// wire text input keyup gui changes -> controller (using dom events)
+	$('.new-todo').on('keyup', (event) => { controller_new_input.on_keyup(event) });
+}

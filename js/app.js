@@ -25,11 +25,6 @@
 		// notify_all("modified todoitem", this, data)
 	 }, 2000);
 
-	 let controller_new_input = new ControllerCreateTodoItem(app, '.new-todo')  // gui is the input el
-	//  document.addEventListener("creating todoitem", (event) => { controller_new_input.notify(event) })
-
-	 // text input keystrokes that edit the model, go to the individual mediator controllers - note the rhs is a ?
-	 $('.new-todo').on('keyup', (event) => { controller_new_input.on_keyup(event) });
-	 controllers.push(controller_new_input)
+	build_create_todoitem_controller(app)
 
 })(window);
