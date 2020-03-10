@@ -1,6 +1,8 @@
 // Includes util.js
 
 const util = new Util();
+var ENTER_KEY = 13;
+var ESCAPE_KEY = 27;
 
 //
 // Models
@@ -41,7 +43,7 @@ class TodoItem {
 
 }
 
-class App {
+class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
 		this._todos = todos == undefined ? [] : todos;  // existing todos from persistence
 	}
@@ -53,7 +55,8 @@ class App {
 	add(title, id, completed) {
 		let todo = new TodoItem(title, id, completed);
 		this._todos.push(todo);
-		// probably need to notify
+		console.log('TODO probably need to notify')
+		return todo
 	}
 
     dirty_all() {
@@ -64,6 +67,8 @@ class App {
 
 
 // Controllers / Mediators
+
+let controllers = []
 
 class ControllerTodoItem {
 	constructor(model_ref, gui_id) {
@@ -89,5 +94,37 @@ class ControllerTodoItem {
 		}
 
 	}
-  }
+}
 
+class ControllerCreateTodoItem {
+	constructor(app_model, id) {
+	  this.app_model = app_model
+	  this.gui_input = id  // not used cos can derive gui from $(e.target)
+	}
+  
+	on_keyup(e) { 
+		// this.welcome_model.message = $(e.target).val() 
+		var $input = $(e.target);
+		var val = $input.val().trim();
+
+		if (e.which !== ENTER_KEY || !val) {
+			return;
+		}
+		let todo_item = this.app_model.add(val, util.uuid(), false)  // title, id, completed
+		let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
+		controllers.push(controller)	// NEED ACCESS TO LIST OF CONTROLLERS	
+		// Observer Wiring
+		document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
+
+		$input.val('');
+
+		// this.render();
+		// this.app_model.dirty_all()  // HACK
+		notify_all("modified todoitem", todo_item);  // more specific update, could even perhaps implement todo_item.dirty()
+		
+	}
+  
+	// notify(event) {
+	//   $(`input[name=${this.gui_input}]`).val(this.welcome_model.message)
+	// }
+}
