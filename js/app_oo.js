@@ -41,6 +41,9 @@ class TodoItem {
 		}
 	}
 
+	dirty() {
+		notify_all("modified todoitem", this);	
+	}
 }
 
 class App {  // aggregates all the sub models into one housing, with some business logic
@@ -112,19 +115,15 @@ class ControllerCreateTodoItem {
 		}
 		let todo_item = this.app_model.add(val, util.uuid(), false)  // title, id, completed
 		let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
-		controllers.push(controller)	// NEED ACCESS TO LIST OF CONTROLLERS	
+		controllers.push(controller)
 		// Observer Wiring
 		document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
 
 		$input.val('');
-
-		// this.render();
-		// this.app_model.dirty_all()  // HACK
-		notify_all("modified todoitem", todo_item);  // more specific update, could even perhaps implement todo_item.dirty()
-		
+		todo_item.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 	}
   
-	// notify(event) {
-	//   $(`input[name=${this.gui_input}]`).val(this.welcome_model.message)
+	// notify(event) {  // not used yet, seems there are no notifications from the app model
+	//  
 	// }
 }
