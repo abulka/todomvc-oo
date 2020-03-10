@@ -11,15 +11,9 @@
 	app.add("title1", "id1", false)
 	app.add("title2", "id2", false)
 
-	// Wire controllers / mediators
-	for (let todo_item of app.todos) {
-		let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
-		controllers.push(controller)
-
-		// Observer Wiring
-		document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
-	}
-
+	// Wire the controllers
+	for (let todo_item of app.todos)
+		visualise_todoitem(todo_item)
 
 	app.dirty_all()
 	console.log("--------------- init complete ----------")

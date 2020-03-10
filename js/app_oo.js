@@ -58,7 +58,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 	add(title, id, completed) {
 		let todo = new TodoItem(title, id, completed);
 		this._todos.push(todo);
-		console.log('TODO probably need to notify')
+		console.log('TODO probably need to notify, or possibly not cos usually no controller wired yet so pointless')
 		return todo
 	}
 
@@ -110,14 +110,11 @@ class ControllerCreateTodoItem {
 		var $input = $(e.target);
 		var val = $input.val().trim();
 
-		if (e.which !== ENTER_KEY || !val) {
+		if (e.which !== ENTER_KEY || !val)
 			return;
-		}
+
 		let todo_item = this.app_model.add(val, util.uuid(), false)  // title, id, completed
-		let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
-		controllers.push(controller)
-		// Observer Wiring
-		document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
+		visualise_todoitem(todo_item)
 
 		$input.val('');
 		todo_item.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
@@ -126,4 +123,19 @@ class ControllerCreateTodoItem {
 	// notify(event) {  // not used yet, seems there are no notifications from the app model
 	//  
 	// }
+}
+
+// not sure where this function should live
+function visualise_todoitem(todo_item) {
+	// create controller
+	let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
+	controllers.push(controller)
+
+	// wire model changes -> controller (using observer pattern)
+	document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
+
+	// wire gui changes -> controller (using dom events)
+	// none
+
+	return todo_item
 }
