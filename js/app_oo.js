@@ -86,7 +86,7 @@ class ControllerTodoItem {
 			.on('dblclick', 'label', this.editingMode.bind(this))
 			.on('keyup', '.edit', this.editKeyup.bind(this))
 			.on('focusout', '.edit', this.update.bind(this))
-			// .on('click', '.destroy', this.destroy.bind(this));		
+			.on('click', '.destroy', this.destroy.bind(this));		
 	}
 
 	toggle (e) {
@@ -135,10 +135,28 @@ class ControllerTodoItem {
 		// this.render();
 	}
 
-	// destroy (e) {
-	// 	this.todos.splice(this.getIndexFromEl(e.target), 1);
-	// 	// this.render();
-	// }
+	destroy (e) {
+		console.assert(1 == 1)
+		console.log('delete not currently implemented')
+		/*
+		todo
+		- delete the todo item model
+		- delete the todo item controller and associated gui
+		- remove todo item from controllers list
+		- remove todo item from App._todos
+
+		Gosh - so much to do, compared to the jquery example:
+			this.todos.splice(this.getIndexFromEl(e.target), 1);
+			this.render();
+
+		Need to think about this.  Do we need a pointer to the App or
+		some higher level, or can we just send an event perhaps?
+		
+		Also, what benefit does the App model
+		have besides an .add() method. The list of todos is not used by anyone yet
+		except perhaps when we implement persistence?
+		*/
+	}
 
 	notify(event) {  
 		if (this.gui_id == undefined) {
@@ -198,7 +216,7 @@ function visualise_todoitem(todo_item) {
 	document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
 
 	// wire gui changes -> controller (using dom events)
-	// none
+	// none wired here, all wired up in ControllerTodoItem constructor
 
 	return todo_item
 }
