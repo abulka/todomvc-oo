@@ -87,7 +87,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 	delete(todo_item) {
 		// Note: if you're not sure about the contents of your array, 
 		// you should check the results of findIndex first
-		console.log('notification from todo_item', todo_item)
+		console.log('App model got delete notification from todo_item model', todo_item)
 		log("DEL App.todos is ", format(this.todos))
 		
 		const indx = this.todos.findIndex(v => v == todo_item);
@@ -136,7 +136,6 @@ class ControllerTodoItem {
 		// var i = this.getIndexFromEl(e.target);  // THIS SEARCHING NOT NEEDED COS WE HAVE INDIV. CONTROLLERS
 		// this.todos[i].completed = !this.todos[i].completed;
 		// this.render();  // THIS COMPLETE REWRITE OF ALL THE TODOS NOT NEEDED COS GRANULAR UPDATE OF WHAT'S ALREADY THERE
-		console.log(this.model_ref)
 	}
 	
 	editingMode (e) {
@@ -178,13 +177,12 @@ class ControllerTodoItem {
 	}
 
 	destroy (e) {
-		console.assert(1 == 1)
-		// console.log('delete not currently implemented')
+		console.log(`controller for '${this.model_ref.title}' got event from GUI of a DELETE`)
 		this.model_ref.delete()
 		$(`li[data-id=${this.gui_id}]`).remove()
 		// this.model_ref = this.gui_id = undefined  // attempt to self zap/neuter :-)
 		// this.model_ref = this.gui_id = undefined  // attempt to self zap/neuter :-)
-		this.gui_id = "OLD"  // attempt to self zap/neuter :-)
+		this.gui_id = "gone"  // attempt to self zap/neuter :-)
 
 		/*
 		Remove the event listener from the document - HARD cos functions don't match cos of the bind !
@@ -218,28 +216,29 @@ class ControllerTodoItem {
 		*/
 	}
 
-	notify(event) {  
-		if (this.gui_id == "OLD") {
-			console.warn('old controller hanging around - this is BAD')
-		}
-		else if (this.gui_id == undefined) {
-			// Gui element has not been created yet, so build it and inject it
-			console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
-			this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
-			let li = this.todoTemplate(this.model_ref.as_dict)
-			let $res = $(li).insertAfter($('ul.todo-list li').last())
-			//console.log('inserted gui el is', $res, $res.find('div label').text())
-			this.bind_events($res)
-		}
-		else {
-			// Gui element already exists, simply update it
-			if (this.model_ref.id == event.detail.from.id) {  // only process specific controller - more efficient
-				console.log(`controller for ${this.model_ref.title} got notified with detail ${JSON.stringify(event.detail)}`)
+	notify(event) {
+		console.assert(this.gui_id != 'gone', 'old controller being notified?')
+		if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process specific controller - more efficient
+			if (this.gui_id == undefined) {
+				// Gui element has not been created yet, so build it and inject it
+				console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
+				this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
+				let li = this.todoTemplate(this.model_ref.as_dict)
+				let $res = $(li).insertAfter($('ul.todo-list li').last())
+				//console.log('inserted gui el is', $res, $res.find('div label').text())
+				this.bind_events($res)
+			}
+			else {
+				// Gui element already exists, simply update it
+				console.log(`controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
 				$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
 			}
 		}
-
+		else {
+			console.log(`controller for '${this.model_ref.title}' ignoring event targeting '${event.detail.from.title}'`)
+		}
 	}
+
 }
 
 class ControllerCreateTodoItem {
