@@ -4,6 +4,22 @@ const util = new Util();
 var ENTER_KEY = 13;
 var ESCAPE_KEY = 27;
 
+function format(obj) {
+	return JSON.stringify(obj, null, " ");
+}
+
+function log(...txt) {
+	document.querySelector("pre").textContent = `${txt.join("\n")}\n`
+}
+
+function log_append(...txt) {
+	document.querySelector("pre").textContent += `${txt.join("\n")}\n`
+}
+
+function debug_report_app_state(app) {
+	log("App.todos is (official)", format(app.todos))
+}
+
 //
 // Models
 //
@@ -41,6 +57,10 @@ class TodoItem {
 		}
 	}
 
+	delete() {
+		notify_all("deleted todoitem", this);	
+	}
+
 	dirty() {
 		notify_all("modified todoitem", this);	
 	}
@@ -49,17 +69,39 @@ class TodoItem {
 class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
 		this._todos = todos == undefined ? [] : todos;  // existing todos from persistence
+		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
 	}
 
-	get todos() {
+	get todos() {  // what's the point of this, it only gets used to populate the initial controllers
 		return this._todos;
 	}
 
 	add(title, id, completed) {
 		let todo = new TodoItem(title, id, completed);
 		this._todos.push(todo);
-		console.log('TODO probably need to notify, or possibly not cos usually no controller wired yet so pointless')
+		// don't notify any controllers cos none have been wired yet
+		// debug_report_app_state(this)
 		return todo
+	}
+
+	delete(todo_item) {
+		// Note: if you're not sure about the contents of your array, 
+		// you should check the results of findIndex first
+		console.log('notification from todo_item', todo_item)
+		log("DEL App.todos is ", format(this.todos))
+		
+		const indx = this.todos.findIndex(v => v == todo_item);
+		console.log('inx found was', indx)
+		this.todos.splice(indx, indx >= 0 ? 1 : 0);
+		// debug_report_app_state(this)
+
+		// someArray4.splice(indx, indx >= 0 ? 1 : 0);
+		// log("", "check findIndex result first > someArray4 (nothing is removed) > ", format(someArray4));
+		// log(`**someArray4.length (should still be 3) ${someArray4.length}`);
+
+		// alternative implementation
+		// this.todos.splice(this.getIndexFromEl(e.target), 1);
+
 	}
 
     dirty_all() {
@@ -71,7 +113,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 // Controllers / Mediators
 
-let controllers = []
+let controllers = []  // what's the point of this, nobody loops through it
 
 class ControllerTodoItem {
 	constructor(model_ref, gui_id) {
@@ -137,12 +179,30 @@ class ControllerTodoItem {
 
 	destroy (e) {
 		console.assert(1 == 1)
-		console.log('delete not currently implemented')
+		// console.log('delete not currently implemented')
+		this.model_ref.delete()
+		$(`li[data-id=${this.gui_id}]`).remove()
+		// this.model_ref = this.gui_id = undefined  // attempt to self zap/neuter :-)
+		// this.model_ref = this.gui_id = undefined  // attempt to self zap/neuter :-)
+		this.gui_id = "OLD"  // attempt to self zap/neuter :-)
+
+		/*
+		Remove the event listener from the document - HARD cos functions don't match cos of the bind !
+		solution is to remember exact function signature as .f attribute when its created.
+			document.removeEventListener("modified todoitem", this.notify, false)  // won't work
+		TIP: use getEventListeners(document) to list all the listeners
+		esp. getEventListeners(document)["modified todoitem"][0].listener
+		or use chrome elements inspector and on rhs is the listeners tab 
+		*/
+		document.removeEventListener("modified todoitem", this.f, false)  // important!
+
 		/*
 		todo
 		- delete the todo item model
-		- delete the todo item controller and associated gui
-		- remove todo item from controllers list
+		- delete the todo item controller and associated gui AND associated bindings
+			presumably deleting the gui el will delete the bindings, phew
+		- remove todo item from controllers list  // not sure if the controllers list will survive
+		- remove any controller document listener using .removeEventListener( controller func )
 		- remove todo item from App._todos
 
 		Gosh - so much to do, compared to the jquery example:
@@ -159,7 +219,10 @@ class ControllerTodoItem {
 	}
 
 	notify(event) {  
-		if (this.gui_id == undefined) {
+		if (this.gui_id == "OLD") {
+			console.warn('old controller hanging around - this is BAD')
+		}
+		else if (this.gui_id == undefined) {
 			// Gui element has not been created yet, so build it and inject it
 			console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
 			this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
@@ -205,6 +268,32 @@ class ControllerCreateTodoItem {
 	// }
 }
 
+class DebugDumpModels {
+	constructor(app) {
+	  this.app = app
+	}
+	
+	notify(event) {
+		debug_report_app_state(this.app)
+	}
+
+	// constructor(id) {
+	//   this.gui_pre_id = id
+	// }
+	
+	// notify(event) {
+	//   let info = {
+	// 	app_models: app,
+	// 	mediator_welcome: mediator_welcome,
+	// 	mediator_welcome_user : mediator_welcome_user,
+	// 	mediator_edit_welcome : mediator_edit_welcome,
+	// 	mediator_edit_firstname : mediator_edit_firstname,
+	// 	mediator_edit_user_surname : mediator_edit_user_surname,
+	//   }
+	//   $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, null, 2)))
+	// }
+
+}
 
 // not sure where this function should live
 function visualise_todoitem(todo_item) {
@@ -213,7 +302,18 @@ function visualise_todoitem(todo_item) {
 	controllers.push(controller)
 
 	// wire model changes -> controller (using observer pattern)
-	document.addEventListener("modified todoitem", (event) => { controller.notify(event) })
+	/*
+	Note, anonymous functions cannot be removed using removeEventListener(), nor can
+	functions that have been called using bind() cos these indirectly also create an anonymous
+	function. But you can remember the func generated by using bind() in order to remove it.
+	Need to call bind() so that 'this' inside the handler refers to the controller.
+
+	Viz. bind() is called on a FUNCTION and you pass in the value of 'this' that you want
+	to be the case inside that function later, in this case it is 'controller'.
+	*/
+	// document.addEventListener("modified todoitem", (event) => { controller.notify(event) })  // cannot use removeEventListener() later
+	controller.f = controller.notify.bind(controller)  // remember func so that later can remove listener
+	document.addEventListener("modified todoitem", controller.f)
 
 	// wire gui changes -> controller (using dom events)
 	// none wired here, all wired up in ControllerTodoItem constructor

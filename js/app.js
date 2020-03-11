@@ -21,8 +21,12 @@
 	app.dirty_all()
 	console.log("--------------- init complete ----------")
 
-
-
+	// reporting state of the app
+	debug_report_app_state(app)
+	// now that things are wired up, hook into event notifications to keep official model updated in gui
+	// mediator_debug_info = new DebugDumpModels("debug_info")
+	const mediator_debug_info = new DebugDumpModels(app)
+	document.addEventListener("notify all called", (event) => { mediator_debug_info.notify(event) })
 
 	// test update an existing item, as an experiment
 	setTimeout(function(){ 
