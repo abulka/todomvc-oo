@@ -254,10 +254,12 @@ class ControllerTodoItem {
 
 }
 
-class ControllerCreateTodoItem {
+class ControllerApp {  // handles adding new items and toggling all as completed etc.
 	constructor(app_model, id) {
 	  this.app_model = app_model
 	  this.gui_input = id  // not used cos can derive gui from $(e.target)
+
+	  $('.toggle-all').on('change', this.toggleAll.bind(this));
 	}
   
 	on_keyup(e) { 
@@ -274,7 +276,17 @@ class ControllerCreateTodoItem {
 		$input.val('');
 		todo_item.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 	}
-  
+
+	toggleAll (e) {
+		var isChecked = $(e.target).prop('checked');
+
+		this.app_model.todos.forEach(function (todo) {
+			todo.completed = isChecked;
+		});
+
+		// this.render();
+	}
+
 	// notify(event) {  // not used yet, seems there are no notifications from the app model
 	//  
 	// }
@@ -334,13 +346,13 @@ function visualise_todoitem(todo_item) {
 }
 
 // not sure where this function should live
-function build_create_todoitem_controller(app_model) {
-	let controller_new_input = new ControllerCreateTodoItem(app_model, '.new-todo')  // gui is the input el
-	controllers.push(controller_new_input)
+function build_app_controller(app_model) {
+	let controller_app = new ControllerApp(app_model, '.new-todo')  // gui is the input el
+	controllers.push(controller_app)
 
 	// wire model changes -> controller - not relevant cos no model
 	// document.addEventListener(...)
 
 	// wire text input keyup gui changes -> controller (using dom events)
-	$('.new-todo').on('keyup', (event) => { controller_new_input.on_keyup(event) });
+	$('.new-todo').on('keyup', (event) => { controller_app.on_keyup(event) });
 }
