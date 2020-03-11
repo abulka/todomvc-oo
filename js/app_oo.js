@@ -120,6 +120,8 @@ class ControllerTodoItem {
 	  this.model_ref = model_ref
 	  this.gui_id = gui_id  // <li> data-id
 	  this.todoTemplate = Handlebars.compile($('#todo-template').html());
+	  this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
+									// if there wasn't a need for bind() then we could just refer to the this.notify function normally
 	}
   
 	bind_events($gui_li) {
@@ -192,7 +194,7 @@ class ControllerTodoItem {
 		esp. getEventListeners(document)["modified todoitem"][0].listener
 		or use chrome elements inspector and on rhs is the listeners tab 
 		*/
-		document.removeEventListener("modified todoitem", this.f, false)  // important!
+		document.removeEventListener("modified todoitem", this.notify_func, false)  // important!
 
 		/*
 		todo
@@ -311,8 +313,8 @@ function visualise_todoitem(todo_item) {
 	to be the case inside that function later, in this case it is 'controller'.
 	*/
 	// document.addEventListener("modified todoitem", (event) => { controller.notify(event) })  // cannot use removeEventListener() later
-	controller.f = controller.notify.bind(controller)  // remember func so that later can remove listener
-	document.addEventListener("modified todoitem", controller.f)
+	controller.notify_func = controller.notify.bind(controller)  // remember exact signature of func so that we can later remove listener
+	document.addEventListener("modified todoitem", controller.notify_func)
 
 	// wire gui changes -> controller (using dom events)
 	// none wired here, all wired up in ControllerTodoItem constructor
