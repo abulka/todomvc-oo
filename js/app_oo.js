@@ -234,6 +234,7 @@ class ControllerTodoItem {
 				// Gui element already exists, simply update it
 				console.log(`controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
 				$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
+				$(`li[data-id=${this.gui_id}]`).toggleClass('completed',this.model_ref._completed)
 			}
 		}
 		else {
