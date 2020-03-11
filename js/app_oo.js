@@ -226,8 +226,14 @@ class ControllerTodoItem {
 				console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
 				this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
 				let li = this.todoTemplate(this.model_ref.as_dict)
-				let $res = $(li).insertAfter($('ul.todo-list li').last())
-				//console.log('inserted gui el is', $res, $res.find('div label').text())
+				let $res
+				if ($('ul.todo-list li').last().length == 0) { // no last element to insert after so append instead
+					$('ul.todo-list').append($(li))  // returns the ul not the inserted li, so need to then find the last li
+					$res = $('ul.todo-list li').last()
+				}
+				else
+					$res = $(li).insertAfter($('ul.todo-list li').last())
+					//console.log('inserted gui el is', $res, $res.find('div label').text())
 				this.bind_events($res)
 			}
 			else {
