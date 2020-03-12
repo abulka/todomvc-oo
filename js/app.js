@@ -15,6 +15,7 @@
 	for (let todo_item of app.todos)
 		visualise_todoitem(todo_item)
 	let controller_app = new ControllerApp(app, '.new-todo')  // gui is the input el
+	let controller_footer = new ControllerFooter()
 
 	// initial render
 	app.dirty_all()
@@ -27,12 +28,12 @@
 	const mediator_debug_info = new DebugDumpModels(app)
 	document.addEventListener("notify all called", (event) => { mediator_debug_info.notify(event) })
 
-	// test update an existing item, as an experiment
-	setTimeout(function(){ 
-		app.todos[0].title += " updated"  // will auto trigger a notify
-		// let data = {id: app.todos[0].id}  // by sending data recipients can filter and be more efficient
-		// notify_all("modified todoitem", this, data)
-	 }, 2000);
+	// // test update an existing item, as an experiment
+	// setTimeout(function(){ 
+	// 	app.todos[0].title += " updated"  // will auto trigger a notify
+	// 	// let data = {id: app.todos[0].id}  // by sending data recipients can filter and be more efficient
+	// 	// notify_all("modified todoitem", this, data)
+	//  }, 2000);
 
 
 })(window);

@@ -198,6 +198,7 @@ class ControllerTodoItem {
 		*/
 		document.removeEventListener("modified todoitem", this.notify_func, false)  // important!
 		document.removeEventListener("deleted todoitem", this.notify_func, false)  // important!
+		document.removeEventListener("filter changed", this.notify_func, false)  // important!
 
 		/*
 		todo
@@ -234,7 +235,21 @@ class ControllerTodoItem {
 
 	notify(event) {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
-		if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process if this controller matches the todoitem model - more efficient
+
+		if (event.type == "filter changed") {
+			let filter = event.detail.data.filter
+			let $el = $(`li[data-id=${this.gui_id}]`)
+			console.log('filter changed notification received by todo item controller', this.model_ref.id, 'saying', filter)
+			if (filter == 'all')
+				$el.show()
+			else if (filter == 'active' && this.model_ref.completed)
+				$el.hide()
+			else if (filter == 'completed' && !this.model_ref.completed)
+				$el.hide()
+			else
+				$el.show()
+		}
+		else if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process if this controller matches the todoitem model - more efficient
 			if (event.type == "modified todoitem") {
 				if (this.gui_id == undefined) {
 					// Gui element has not been created yet, so build it and inject it
@@ -253,7 +268,6 @@ class ControllerTodoItem {
 				}
 			}
 			else if (event.type == "deleted todoitem") {
-				console.log('AHA')
 				this.unwire()
 			}
 		}
@@ -263,6 +277,29 @@ class ControllerTodoItem {
 	}
 
 }
+
+
+class ControllerFooter {  // handles filters, reporting number of items
+	constructor(footerapp_model, id) {
+	  	// this.app_model = app_model
+	  	// this.gui_id = 'xx'  // HACK only way to penetrate todo item controller if
+		this.active_filter = 'all'  // options are: all, active, completed
+		$('footer ul').on('click', this.filter_click.bind(this));
+	}
+
+	filter_click(e) {
+		var $el = $(e.target).closest('li');
+		this.active_filter = $el.find('a').attr("name")
+		$el.siblings().find('a').removeClass('selected')
+		$el.find('a').addClass('selected')
+		console.log('filter active is', this.active_filter)
+
+		// this broadcast should go to all the todoitem controllers
+		notify_all("filter changed", this, {'filter': this.active_filter});
+	}
+
+}
+
 
 class ControllerApp {  // handles adding new items and toggling all as completed etc.
 	constructor(app_model, id) {
@@ -375,6 +412,7 @@ function visualise_todoitem(todo_item) {
 	controller.notify_func = controller.notify.bind(controller)  // remember exact signature of func so that we can later remove listener
 	document.addEventListener("modified todoitem", controller.notify_func)
 	document.addEventListener("deleted todoitem", controller.notify_func)
+	document.addEventListener("filter changed", controller.notify_func)
 
 	// wire gui changes -> controller (using dom events)
 	// none wired here, all wired up in ControllerTodoItem constructor
