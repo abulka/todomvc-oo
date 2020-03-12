@@ -12,10 +12,10 @@
 	app.add("title2", "id2", false)
 
 	// Wire the controllers
+	app.controller_app = new ControllerApp(app, '.new-todo')  // gui is the input el with this class
+	app.controller_footer = new ControllerFooter(app, 'footer')  // gui is footer el
 	for (let todo_item of app.todos)
-		visualise_todoitem(todo_item)
-	let controller_app = new ControllerApp(app, '.new-todo')  // gui is the input el
-	let controller_footer = new ControllerFooter(app, 'footer')
+		app.visualise_todoitem(todo_item)
 
 	// initial render
 	app.dirty_all()
