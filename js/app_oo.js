@@ -113,7 +113,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 // Controllers / Mediators
 
-let controllers = []  // what's the point of this, nobody loops through it
+// let controllers = []  // what's the point of this, nobody loops through it
 
 class ControllerTodoItem {
 	constructor(model_ref, gui_id) {
@@ -256,10 +256,11 @@ class ControllerTodoItem {
 
 class ControllerApp {  // handles adding new items and toggling all as completed etc.
 	constructor(app_model, id) {
-	  this.app_model = app_model
-	  this.gui_input = id  // not used cos can derive gui from $(e.target)
+	  	this.app_model = app_model
+	  	this.gui_input = id  // not used cos can derive gui from $(e.target)
 
-	  $('.toggle-all').on('change', this.toggleAll.bind(this));
+		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) });
+	  	$('.toggle-all').on('change', this.toggleAll.bind(this));
 	}
   
 	on_keyup(e) { 
@@ -323,7 +324,7 @@ class DebugDumpModels {
 function visualise_todoitem(todo_item) {
 	// create controller
 	let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
-	controllers.push(controller)
+	// controllers.push(controller)
 
 	// wire model changes -> controller (using observer pattern)
 	/*
@@ -343,16 +344,4 @@ function visualise_todoitem(todo_item) {
 	// none wired here, all wired up in ControllerTodoItem constructor
 
 	return todo_item
-}
-
-// not sure where this function should live
-function build_app_controller(app_model) {
-	let controller_app = new ControllerApp(app_model, '.new-todo')  // gui is the input el
-	controllers.push(controller_app)
-
-	// wire model changes -> controller - not relevant cos no model
-	// document.addEventListener(...)
-
-	// wire text input keyup gui changes -> controller (using dom events)
-	$('.new-todo').on('keyup', (event) => { controller_app.on_keyup(event) });
 }

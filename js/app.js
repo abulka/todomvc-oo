@@ -12,10 +12,9 @@
 	app.add("title2", "id2", false)
 
 	// Wire the controllers
-	// build_todo_list_controller(app, '.todo-list')
 	for (let todo_item of app.todos)
 		visualise_todoitem(todo_item)
-	build_app_controller(app)
+	let controller_app = new ControllerApp(app, '.new-todo')  // gui is the input el
 
 	// initial render
 	app.dirty_all()
