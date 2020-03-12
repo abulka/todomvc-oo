@@ -90,7 +90,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		// debug_report_app_state(this)
 
 		if (this.controller_footer)
-			this.controller_footer.update_num_todo()
+			this.controller_footer.renderFooter()
 
 		return todo
 	}
@@ -105,7 +105,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		console.log('inx found was', indx)
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
 		// debug_report_app_state(this)
-		this.controller_footer.update_num_todo()
+		this.controller_footer.renderFooter()
 
 		// someArray4.splice(indx, indx >= 0 ? 1 : 0);
 		// log("", "check findIndex result first > someArray4 (nothing is removed) > ", format(someArray4));
@@ -190,8 +190,6 @@ class ControllerTodoItem {
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
 		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
-
-		this.last_filter  // hack to remember last filter mode
 
 		// hack wiring
 		this.controller_app
@@ -337,8 +335,6 @@ class ControllerTodoItem {
 					let li = this.todoTemplate(this.model_ref.as_dict)
 					let $res = this._insert(li)
 					this.bind_events($res)
-					this.apply_filter(this.controller_footer.filter)  // cheat by accessing footer controller directly
-					this.controller_footer.renderFooter()
 				}
 				else {
 					// Gui element already exists, simply update it
@@ -346,10 +342,10 @@ class ControllerTodoItem {
 					$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
 					$(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
 					$(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
-					this.apply_filter(this.last_filter)
-					this.controller_footer.renderFooter()
 				}
-			}
+				this.apply_filter(this.controller_footer.filter)  // cheat by accessing footer controller directly
+				this.controller_footer.renderFooter()
+		}
 			else if (event.type == "deleted todoitem") {
 				this.unwire()
 			}
@@ -382,26 +378,7 @@ class ControllerFooter {  // handles filters, reporting number of items
 	filter_click(e) {
 		var $el = $(e.target).closest('li');
 		this.filter = $el.find('a').attr("name")
-
-		// $el.siblings().find('a').removeClass('selected')
-		// $el.find('a').addClass('selected')
-		// console.log('filter active is', this.active_filter)
 		this.renderFooter()
-
-		// this broadcast goes to all the todoitem controllers
-		notify_all("filter changed", this, {'filter': this.filter});
-	}
-
-	update_num_todo() {
-		this.renderFooter()
-		// let todoCount = this.app.todos.length
-		// let activeTodoCount = this.app.getActiveTodos().length
-		// let completedTodos = todoCount - activeTodoCount
-		// $(this.gui_footer_selector).find('.todo-count strong').text(activeTodoCount)
-		// $(this.gui_footer_selector).find('.todo-count span').text(util.pluralize(activeTodoCount, 'item'))
-
-		// this broadcast goes to all the todoitem controllers
-		notify_all("filter changed", this, {'filter': this.filter});
 	}
 
 	renderFooter() {
@@ -415,6 +392,9 @@ class ControllerFooter {  // handles filters, reporting number of items
 		});
 
 		$('.footer').toggle(todoCount > 0).html(template);
+
+		// this broadcast goes to all the todoitem controllers
+		notify_all("filter changed", this, {'filter': this.filter});		
 	}
 
 }
