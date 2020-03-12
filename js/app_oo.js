@@ -89,6 +89,9 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		// don't notify any controllers cos none have been wired yet
 		// debug_report_app_state(this)
 
+		this.visualise_todoitem(todo)
+		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
+
 		if (this.controller_footer)
 			this.controller_footer.renderFooter()
 
@@ -419,11 +422,7 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 
 		$input.val('');
 
-		let todo_item = this.app.add(val, util.uuid(), false)  // title, id, completed
-		this.app.visualise_todoitem(todo_item)
-				// but then again, what would the app model do? it can't know about guis so it would end up
-				// back here again :-)
-		todo_item.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
+		this.app.add(val, util.uuid(), false)  // title, id, completed
 	}
 
 	toggleAll(e) {
