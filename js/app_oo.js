@@ -16,9 +16,6 @@ function log_append(...txt) {
 	document.querySelector("pre").textContent += `${txt.join("\n")}\n`
 }
 
-function debug_report_app_state(app) {
-	log("App.todos is (official)", format(app.todos))
-}
 
 //
 // Models
@@ -356,12 +353,12 @@ class ControllerTodoItem {
 
 class ControllerFooter {  // handles filters, reporting number of items
 	constructor(app, footer_selector) {
-	  	this.model_app = app
+	  	this.app = app
 		this.gui_footer_selector = footer_selector
 		  
 		this.active_filter = 'all'  // options are: all, active, completed
 
-		$('.footer').on('click', '.clear-completed', this.model_app.destroyCompleted.bind(this.model_app));
+		$('.footer').on('click', '.clear-completed', this.app.destroyCompleted.bind(this.app));
 		$(this.gui_footer_selector).find('ul').on('click', this.filter_click.bind(this));
 	}
 
@@ -420,29 +417,14 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 	// }
 }
 
-class DebugDumpModels {  // rename ControllerDebugDumpModels
+class ControllerDebugDumpModels {
 	constructor(app) {
 		this.app = app
+		document.addEventListener("notify all called", (event) => { this.notify(event) })
 	}
 
 	notify(event) {
-		debug_report_app_state(this.app)
+		log("App.todos is (official)", format(this.app.todos))
 	}
-
-	// constructor(id) {
-	//   this.gui_pre_id = id
-	// }
-
-	// notify(event) {
-	//   let info = {
-	// 	app_models: app,
-	// 	mediator_welcome: mediator_welcome,
-	// 	mediator_welcome_user : mediator_welcome_user,
-	// 	mediator_edit_welcome : mediator_edit_welcome,
-	// 	mediator_edit_firstname : mediator_edit_firstname,
-	// 	mediator_edit_user_surname : mediator_edit_user_surname,
-	//   }
-	//   $(`#${this.gui_pre_id}`).html(syntaxHighlight(JSON.stringify(info, null, 2)))
-	// }
 
 }
