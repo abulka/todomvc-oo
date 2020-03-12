@@ -122,6 +122,7 @@ class ControllerTodoItem {
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
 		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
+		this.last_filter  // hack to remember last filter mode
 	}
 
 	bind_events($gui_li) {
@@ -233,21 +234,26 @@ class ControllerTodoItem {
 		return $res
 	}
 
+	apply_filter(filter) {
+		let $el = $(`li[data-id=${this.gui_id}]`)
+		if (filter == 'all')
+			$el.show()
+		else if (filter == 'active' && this.model_ref.completed)
+			$el.hide()
+		else if (filter == 'completed' && !this.model_ref.completed)
+			$el.hide()
+		else
+			$el.show()
+	}
+
 	notify(event) {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
 
 		if (event.type == "filter changed") {
-			let filter = event.detail.data.filter
-			let $el = $(`li[data-id=${this.gui_id}]`)
-			console.log('filter changed notification received by todo item controller', this.model_ref.id, 'saying', filter)
-			if (filter == 'all')
-				$el.show()
-			else if (filter == 'active' && this.model_ref.completed)
-				$el.hide()
-			else if (filter == 'completed' && !this.model_ref.completed)
-				$el.hide()
-			else
-				$el.show()
+			let todo_item = event.detail.data.todo_item
+			let filter = this.last_filter = event.detail.data.filter
+			console.log('filter changed notification received by todo item controller', this.model_ref.id, 'saying', filter, 'todo_item is', todo_item)
+			this.apply_filter(filter)
 		}
 		else if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process if this controller matches the todoitem model - more efficient
 			if (event.type == "modified todoitem") {
@@ -265,6 +271,7 @@ class ControllerTodoItem {
 					$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
 					$(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
 					$(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
+					this.apply_filter(this.last_filter)
 				}
 			}
 			else if (event.type == "deleted todoitem") {
@@ -282,11 +289,9 @@ class ControllerTodoItem {
 class ControllerFooter {  // handles filters, reporting number of items
 	constructor(footerapp_model, id) {
 	  	// this.app_model = app_model
-	  	// this.gui_id = 'xx'  // HACK only way to penetrate todo item controller if
+	  	// this.gui_id
 		this.active_filter = 'all'  // options are: all, active, completed
 		$('footer ul').on('click', this.filter_click.bind(this));
-		document.addEventListener("modified todoitem", this.item_modified.bind(this))
-
 	}
 
 	filter_click(e) {
@@ -300,12 +305,6 @@ class ControllerFooter {  // handles filters, reporting number of items
 		notify_all("filter changed", this, {'filter': this.active_filter});
 	}
 
-	item_modified() {
-		// Constantly re-filter everything after any change to items
-		// TODO need to target JUST the todoitem controller whose model changed
-		// DO the events need to happen in a particular order?
-		notify_all("filter changed", this, {'filter': this.active_filter});
-	}
 }
 
 
