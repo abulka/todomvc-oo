@@ -11,6 +11,8 @@
  * 
  * 
  * The attribute event.detail can be interrogated by the receiving observer function for the 'from' and 'data' information
+ * The attribute event.type is the event name e.g. "notify all called" or "modified todoitem"
+ * 
  * The custom event generated here is broadcast to the document element, an arbitrary decision
  * 
  * To remove an event listener, use document.removeEventListener() and specify the function that

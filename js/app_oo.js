@@ -181,10 +181,12 @@ class ControllerTodoItem {
 	destroy (e) {
 		console.log(`controller for '${this.model_ref.title}' got event from GUI of a DELETE`)
 		this.model_ref.delete()
+		// this.unwire()
+	}
+
+	unwire() {
 		$(`li[data-id=${this.gui_id}]`).remove()
-		// this.model_ref = this.gui_id = undefined  // attempt to self zap/neuter :-)
-		// this.model_ref = this.gui_id = undefined  // attempt to self zap/neuter :-)
-		this.gui_id = "gone"  // attempt to self zap/neuter :-)
+		this.gui_id = "gone"  // protect against using this controller again
 
 		/*
 		Remove the event listener from the document - HARD cos functions don't match cos of the bind !
@@ -195,6 +197,7 @@ class ControllerTodoItem {
 		or use chrome elements inspector and on rhs is the listeners tab 
 		*/
 		document.removeEventListener("modified todoitem", this.notify_func, false)  // important!
+		document.removeEventListener("deleted todoitem", this.notify_func, false)  // important!
 
 		/*
 		todo
@@ -231,25 +234,31 @@ class ControllerTodoItem {
 
 	notify(event) {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
-		if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process specific controller - more efficient
-			if (this.gui_id == undefined) {
-				// Gui element has not been created yet, so build it and inject it
-				console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
-				this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
-				let li = this.todoTemplate(this.model_ref.as_dict)
-				let $res = this._insert(li)
-				this.bind_events($res)
+		if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process if this controller matches the todoitem model - more efficient
+			if (event.type == "modified todoitem") {
+				if (this.gui_id == undefined) {
+					// Gui element has not been created yet, so build it and inject it
+					console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
+					this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
+					let li = this.todoTemplate(this.model_ref.as_dict)
+					let $res = this._insert(li)
+					this.bind_events($res)
+				}
+				else {
+					// Gui element already exists, simply update it
+					console.log(`controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
+					$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
+					$(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
+					$(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
+				}
 			}
-			else {
-				// Gui element already exists, simply update it
-				console.log(`controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
-				$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
-				$(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
-				$(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
+			else if (event.type == "deleted todoitem") {
+				console.log('AHA')
+				this.unwire()
 			}
 		}
 		else {
-			console.log(`controller for '${this.model_ref.title}' ignoring event targeting '${event.detail.from.title}'`)
+			console.log(`   ... controller for '${this.model_ref.title}' ignoring event targeting '${event.detail.from.title}'`)
 		}
 	}
 
@@ -260,8 +269,10 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 	  	this.app_model = app_model
 	  	this.gui_input = id  // not used cos can derive gui from $(e.target)
 
-		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) });
-	  	$('.toggle-all').on('change', this.toggleAll.bind(this));
+		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
+		$('.toggle-all').on('change', this.toggleAll.bind(this))
+		$('.footer').on('click', '.clear-completed', this.destroyCompleted.bind(this));
+		  
 	}
   
 	on_keyup(e) { 
@@ -287,6 +298,29 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 		});
 
 		// this.render();
+	}
+
+	destroyCompleted () {
+		// in oo version, we simply delete each completed todo
+		this.getCompletedTodos().forEach(function (todo) {
+			todo.delete()
+		});
+
+		// jquery version is pretty simple, just replace the todo list and re-render:
+		// this.todos = this.getActiveTodos();
+		// this.render();
+	}
+
+	getActiveTodos () {
+		return this.app_model.todos.filter(function (todo) {
+			return !todo.completed;
+		});
+	}
+
+	getCompletedTodos () {
+		return this.app_model.todos.filter(function (todo) {
+			return todo.completed;
+		});
 	}
 
 	// notify(event) {  // not used yet, seems there are no notifications from the app model
@@ -340,6 +374,7 @@ function visualise_todoitem(todo_item) {
 	// document.addEventListener("modified todoitem", (event) => { controller.notify(event) })  // cannot use removeEventListener() later
 	controller.notify_func = controller.notify.bind(controller)  // remember exact signature of func so that we can later remove listener
 	document.addEventListener("modified todoitem", controller.notify_func)
+	document.addEventListener("deleted todoitem", controller.notify_func)
 
 	// wire gui changes -> controller (using dom events)
 	// none wired here, all wired up in ControllerTodoItem constructor
