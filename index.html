@@ -45,8 +45,8 @@
 			<!-- This footer should hidden by default and shown when there are todos -->
 			<footer class="footer">
 				<!-- This should be `0 items left` by default -->
-				<span class="todo-count"><strong>0</strong> item left</span>
-				<!-- Remove ?? this if you don't implement routing - NOTE ROUTING NOT IMPLEMENTED, USE REGULAR IDS AND EVENTS-->
+				<span class="todo-count"><strong>0</strong> <span>item</span> left</span>
+				<!--NOTE ROUTING NOT IMPLEMENTED, using name attribute and regular events-->
 				<ul class="filters">
 					<li>
 						<a name="all" class="selected" href="#">All</a>
@@ -86,6 +86,22 @@
 				<input class="edit" value="{{title}}">
 			</li>
 		{{/this}}
+		</script>
+
+		<script id="footer-template" type="text/x-handlebars-template">
+			<span class="todo-count"><strong>{{activeTodoCount}}</strong> {{activeTodoWord}} left</span>
+			<ul class="filters">
+				<li>
+					<a name="all" {{#eq filter 'all'}}class="selected"{{/eq}} href="#">All</a>
+				</li>
+				<li>
+					<a name="active" {{#eq filter 'active'}}class="selected"{{/eq}} href="#">Active</a>
+				</li>
+				<li>
+					<a name="completed" {{#eq filter 'completed'}}class="selected"{{/eq}} href="#">Completed</a>
+				</li>
+			</ul>
+			{{#if completedTodos}}<button class="clear-completed">Clear completed</button>{{/if}}
 		</script>
 
 		<!-- Scripts here. Don't remove ↓ -->

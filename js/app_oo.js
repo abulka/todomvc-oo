@@ -1,5 +1,9 @@
 // Includes util.js
 
+Handlebars.registerHelper('eq', function (a, b, options) {
+	return a === b ? options.fn(this) : options.inverse(this);
+});
+
 const util = new Util();
 var ENTER_KEY = 13;
 var ESCAPE_KEY = 27;
@@ -84,6 +88,10 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		this._todos.push(todo);
 		// don't notify any controllers cos none have been wired yet
 		// debug_report_app_state(this)
+
+		if (this.controller_footer)
+			this.controller_footer.update_num_todo()
+
 		return todo
 	}
 
@@ -97,6 +105,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		console.log('inx found was', indx)
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
 		// debug_report_app_state(this)
+		this.controller_footer.update_num_todo()
 
 		// someArray4.splice(indx, indx >= 0 ? 1 : 0);
 		// log("", "check findIndex result first > someArray4 (nothing is removed) > ", format(someArray4));
@@ -244,7 +253,7 @@ class ControllerTodoItem {
 	}
 
 	destroy(e) {
-		console.log(`controller for '${this.model_ref.title}' got event from GUI of a DELETE`)
+		console.log(`       controller for '${this.model_ref.title}' got event from GUI of a DELETE`)
 		this.model_ref.delete()
 		// this.unwire()
 	}
@@ -323,20 +332,22 @@ class ControllerTodoItem {
 			if (event.type == "modified todoitem") {
 				if (this.gui_id == undefined) {
 					// Gui element has not been created yet, so build it and inject it
-					console.log(`controller for ${this.model_ref.title} got notified to build initial gui`)
+					console.log(`       controller for ${this.model_ref.title} got notified to build initial gui`)
 					this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
 					let li = this.todoTemplate(this.model_ref.as_dict)
 					let $res = this._insert(li)
 					this.bind_events($res)
-					this.apply_filter(this.controller_footer.active_filter)  // cheat by accessing footer controller directly
+					this.apply_filter(this.controller_footer.filter)  // cheat by accessing footer controller directly
+					this.controller_footer.renderFooter()
 				}
 				else {
 					// Gui element already exists, simply update it
-					console.log(`controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
+					console.log(`       controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
 					$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
 					$(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
 					$(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
 					this.apply_filter(this.last_filter)
+					this.controller_footer.renderFooter()
 				}
 			}
 			else if (event.type == "deleted todoitem") {
@@ -355,11 +366,13 @@ class ControllerFooter {  // handles filters, reporting number of items
 	constructor(app, footer_selector) {
 	  	this.app = app
 		this.gui_footer_selector = footer_selector
+		this.footerTemplate = Handlebars.compile($('#footer-template').html());
 		  
-		this.active_filter = 'all'  // options are: all, active, completed
+		this.filter = 'all'  // options are: all, active, completed
 
 		$(this.gui_footer_selector).on('click', '.clear-completed', this.destroyCompleted.bind(this))
-		$(this.gui_footer_selector).find('ul').on('click', this.filter_click.bind(this))
+		// $(this.gui_footer_selector).find('ul').on('click', this.filter_click.bind(this))
+		$(this.gui_footer_selector).on('click', 'ul', this.filter_click.bind(this))
 	}
 
 	destroyCompleted(e) {
@@ -368,13 +381,40 @@ class ControllerFooter {  // handles filters, reporting number of items
 
 	filter_click(e) {
 		var $el = $(e.target).closest('li');
-		this.active_filter = $el.find('a').attr("name")
-		$el.siblings().find('a').removeClass('selected')
-		$el.find('a').addClass('selected')
-		console.log('filter active is', this.active_filter)
+		this.filter = $el.find('a').attr("name")
+
+		// $el.siblings().find('a').removeClass('selected')
+		// $el.find('a').addClass('selected')
+		// console.log('filter active is', this.active_filter)
+		this.renderFooter()
 
 		// this broadcast goes to all the todoitem controllers
-		notify_all("filter changed", this, {'filter': this.active_filter});
+		notify_all("filter changed", this, {'filter': this.filter});
+	}
+
+	update_num_todo() {
+		this.renderFooter()
+		// let todoCount = this.app.todos.length
+		// let activeTodoCount = this.app.getActiveTodos().length
+		// let completedTodos = todoCount - activeTodoCount
+		// $(this.gui_footer_selector).find('.todo-count strong').text(activeTodoCount)
+		// $(this.gui_footer_selector).find('.todo-count span').text(util.pluralize(activeTodoCount, 'item'))
+
+		// this broadcast goes to all the todoitem controllers
+		notify_all("filter changed", this, {'filter': this.filter});
+	}
+
+	renderFooter() {
+		var todoCount = this.app.todos.length;
+		var activeTodoCount = this.app.getActiveTodos().length;
+		var template = this.footerTemplate({
+			activeTodoCount: activeTodoCount,
+			activeTodoWord: util.pluralize(activeTodoCount, 'item'),
+			completedTodos: todoCount - activeTodoCount,
+			filter: this.filter
+		});
+
+		$('.footer').toggle(todoCount > 0).html(template);
 	}
 
 }
