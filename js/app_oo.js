@@ -285,6 +285,8 @@ class ControllerFooter {  // handles filters, reporting number of items
 	  	// this.gui_id = 'xx'  // HACK only way to penetrate todo item controller if
 		this.active_filter = 'all'  // options are: all, active, completed
 		$('footer ul').on('click', this.filter_click.bind(this));
+		document.addEventListener("modified todoitem", this.item_modified.bind(this))
+
 	}
 
 	filter_click(e) {
@@ -298,6 +300,12 @@ class ControllerFooter {  // handles filters, reporting number of items
 		notify_all("filter changed", this, {'filter': this.active_filter});
 	}
 
+	item_modified() {
+		// Constantly re-filter everything after any change to items
+		// TODO need to target JUST the todoitem controller whose model changed
+		// DO the events need to happen in a particular order?
+		notify_all("filter changed", this, {'filter': this.active_filter});
+	}
 }
 
 
