@@ -358,8 +358,12 @@ class ControllerFooter {  // handles filters, reporting number of items
 		  
 		this.active_filter = 'all'  // options are: all, active, completed
 
-		$('.footer').on('click', '.clear-completed', this.app.destroyCompleted.bind(this.app));
-		$(this.gui_footer_selector).find('ul').on('click', this.filter_click.bind(this));
+		$(this.gui_footer_selector).on('click', '.clear-completed', this.destroyCompleted.bind(this))
+		$(this.gui_footer_selector).find('ul').on('click', this.filter_click.bind(this))
+	}
+
+	destroyCompleted(e) {
+		this.app.destroyCompleted()
 	}
 
 	filter_click(e) {
