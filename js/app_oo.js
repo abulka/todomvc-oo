@@ -58,11 +58,11 @@ class TodoItem {
 	}
 
 	delete() {
-		notify_all("deleted todoitem", this);	
+		notify_all("deleted todoitem", this);
 	}
 
 	dirty() {
-		notify_all("modified todoitem", this);	
+		notify_all("modified todoitem", this);
 	}
 }
 
@@ -89,7 +89,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		// you should check the results of findIndex first
 		console.log('App model got delete notification from todo_item model', todo_item)
 		log("DEL App.todos is ", format(this.todos))
-		
+
 		const indx = this.todos.findIndex(v => v == todo_item);
 		console.log('inx found was', indx)
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
@@ -104,10 +104,10 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 	}
 
-    dirty_all() {
+	dirty_all() {
 		// notify_all("modified todoitem", this)
 		notify_all("modified todoitem", this)
-	  }	
+	}
 }
 
 
@@ -117,30 +117,30 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 class ControllerTodoItem {
 	constructor(model_ref, gui_id) {
-	  this.model_ref = model_ref
-	  this.gui_id = gui_id  // <li> data-id
-	  this.todoTemplate = Handlebars.compile($('#todo-template').html());
-	  this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
-									// if there wasn't a need for bind() then we could just refer to the this.notify function normally
+		this.model_ref = model_ref
+		this.gui_id = gui_id  // <li> data-id
+		this.todoTemplate = Handlebars.compile($('#todo-template').html());
+		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
+		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
 	}
-  
+
 	bind_events($gui_li) {
 		($gui_li)
 			.on('change', '.toggle', this.toggle.bind(this))
 			.on('dblclick', 'label', this.editingMode.bind(this))
 			.on('keyup', '.edit', this.editKeyup.bind(this))
 			.on('focusout', '.edit', this.update.bind(this))
-			.on('click', '.destroy', this.destroy.bind(this));		
+			.on('click', '.destroy', this.destroy.bind(this));
 	}
 
-	toggle (e) {
+	toggle(e) {
 		this.model_ref.completed = !this.model_ref.completed
 		// var i = this.getIndexFromEl(e.target);  // THIS SEARCHING NOT NEEDED COS WE HAVE INDIV. CONTROLLERS
 		// this.todos[i].completed = !this.todos[i].completed;
 		// this.render();  // THIS COMPLETE REWRITE OF ALL THE TODOS NOT NEEDED COS GRANULAR UPDATE OF WHAT'S ALREADY THERE
 	}
-	
-	editingMode (e) {
+
+	editingMode(e) {
 		var $input = $(e.target).closest('li').addClass('editing').find('.edit');
 		// puts caret at end of input
 		$input.val('');
@@ -149,7 +149,7 @@ class ControllerTodoItem {
 	}
 
 
-	editKeyup (e) {
+	editKeyup(e) {
 		if (e.which === ENTER_KEY) {
 			e.target.blur();
 		}
@@ -159,11 +159,11 @@ class ControllerTodoItem {
 		}
 	}
 
-	update (e) {
+	update(e) {
 		var el = e.target;
 		var $el = $(el);
 		var val = $el.val().trim();
-		
+
 		if ($el.data('abort')) {
 			$el.data('abort', false);
 		} else if (!val) {
@@ -178,7 +178,7 @@ class ControllerTodoItem {
 		// this.render();
 	}
 
-	destroy (e) {
+	destroy(e) {
 		console.log(`controller for '${this.model_ref.title}' got event from GUI of a DELETE`)
 		this.model_ref.delete()
 		// this.unwire()
@@ -266,16 +266,16 @@ class ControllerTodoItem {
 
 class ControllerApp {  // handles adding new items and toggling all as completed etc.
 	constructor(app_model, id) {
-	  	this.app_model = app_model
-	  	this.gui_input = id  // not used cos can derive gui from $(e.target)
+		this.app_model = app_model
+		this.gui_input = id  // not used cos can derive gui from $(e.target)
 
 		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
 		$('.toggle-all').on('change', this.toggleAll.bind(this))
 		$('.footer').on('click', '.clear-completed', this.destroyCompleted.bind(this));
-		  
+
 	}
-  
-	on_keyup(e) { 
+
+	on_keyup(e) {
 		// this.welcome_model.message = $(e.target).val() 
 		var $input = $(e.target);
 		var val = $input.val().trim();
@@ -290,7 +290,7 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 		todo_item.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 	}
 
-	toggleAll (e) {
+	toggleAll(e) {
 		var isChecked = $(e.target).prop('checked');
 
 		this.app_model.todos.forEach(function (todo) {
@@ -300,7 +300,7 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 		// this.render();
 	}
 
-	destroyCompleted () {
+	destroyCompleted() {
 		// in oo version, we simply delete each completed todo
 		this.getCompletedTodos().forEach(function (todo) {
 			todo.delete()
@@ -311,13 +311,13 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 		// this.render();
 	}
 
-	getActiveTodos () {
+	getActiveTodos() {
 		return this.app_model.todos.filter(function (todo) {
 			return !todo.completed;
 		});
 	}
 
-	getCompletedTodos () {
+	getCompletedTodos() {
 		return this.app_model.todos.filter(function (todo) {
 			return todo.completed;
 		});
@@ -330,9 +330,9 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 
 class DebugDumpModels {
 	constructor(app) {
-	  this.app = app
+		this.app = app
 	}
-	
+
 	notify(event) {
 		debug_report_app_state(this.app)
 	}
@@ -340,7 +340,7 @@ class DebugDumpModels {
 	// constructor(id) {
 	//   this.gui_pre_id = id
 	// }
-	
+
 	// notify(event) {
 	//   let info = {
 	// 	app_models: app,
