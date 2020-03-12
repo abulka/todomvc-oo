@@ -104,6 +104,29 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 	}
 
+	destroyCompleted() {
+		// in oo version, we simply delete each completed todo
+		this.getCompletedTodos().forEach(function (todo) {
+			todo.delete()
+		});
+
+		// jquery version is pretty simple, just replace the todo list and re-render:
+		// this.todos = this.getActiveTodos();
+		// this.render();
+	}
+
+	getActiveTodos() {
+		return this.todos.filter(function (todo) {
+			return !todo.completed;
+		});
+	}
+
+	getCompletedTodos() {
+		return this.todos.filter(function (todo) {
+			return todo.completed;
+		});
+	}
+
 	dirty_all() {
 		// notify_all("modified todoitem", this)
 		notify_all("modified todoitem", this)
@@ -287,11 +310,14 @@ class ControllerTodoItem {
 
 
 class ControllerFooter {  // handles filters, reporting number of items
-	constructor(footerapp_model, id) {
-	  	// this.app_model = app_model
-	  	// this.gui_id
+	constructor(app, footer_selector) {
+	  	this.model_app = app
+		this.gui_footer_selector = footer_selector
+		  
 		this.active_filter = 'all'  // options are: all, active, completed
-		$('footer ul').on('click', this.filter_click.bind(this));
+
+		$('.footer').on('click', '.clear-completed', this.model_app.destroyCompleted.bind(this.model_app));
+		$(this.gui_footer_selector).find('ul').on('click', this.filter_click.bind(this));
 	}
 
 	filter_click(e) {
@@ -301,7 +327,7 @@ class ControllerFooter {  // handles filters, reporting number of items
 		$el.find('a').addClass('selected')
 		console.log('filter active is', this.active_filter)
 
-		// this broadcast should go to all the todoitem controllers
+		// this broadcast goes to all the todoitem controllers
 		notify_all("filter changed", this, {'filter': this.active_filter});
 	}
 
@@ -315,8 +341,6 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 
 		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
 		$('.toggle-all').on('change', this.toggleAll.bind(this))
-		$('.footer').on('click', '.clear-completed', this.destroyCompleted.bind(this));
-
 	}
 
 	on_keyup(e) {
@@ -342,29 +366,6 @@ class ControllerApp {  // handles adding new items and toggling all as completed
 		});
 
 		// this.render();
-	}
-
-	destroyCompleted() {
-		// in oo version, we simply delete each completed todo
-		this.getCompletedTodos().forEach(function (todo) {
-			todo.delete()
-		});
-
-		// jquery version is pretty simple, just replace the todo list and re-render:
-		// this.todos = this.getActiveTodos();
-		// this.render();
-	}
-
-	getActiveTodos() {
-		return this.app_model.todos.filter(function (todo) {
-			return !todo.completed;
-		});
-	}
-
-	getCompletedTodos() {
-		return this.app_model.todos.filter(function (todo) {
-			return todo.completed;
-		});
 	}
 
 	// notify(event) {  // not used yet, seems there are no notifications from the app model

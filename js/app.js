@@ -15,7 +15,7 @@
 	for (let todo_item of app.todos)
 		visualise_todoitem(todo_item)
 	let controller_app = new ControllerApp(app, '.new-todo')  // gui is the input el
-	let controller_footer = new ControllerFooter()
+	let controller_footer = new ControllerFooter(app, 'footer')
 
 	// initial render
 	app.dirty_all()
