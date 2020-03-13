@@ -72,52 +72,35 @@ class TodoItem {
 
 class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
-		this._todos = todos == undefined ? [] : todos;  // existing todos from persistence
+		this.todos = todos == undefined ? [] : todos;  // existing todos from persistence
 		this.controller_header
 		this.controller_footer
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
 	}
 
-	get todos() {  // what's the point of this, it only gets used to populate the initial controllers
-		return this._todos;
-	}
-
 	add(title, id, completed) {
 		let todo = new TodoItem(title, id, completed);
-		this._todos.push(todo);
+		this.todos.push(todo);
 
 		this.visualise_todoitem(todo)
 		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 
-		if (this.controller_footer)
-			this.controller_footer.renderFooter()
+		this.controller_footer.renderFooter()
 
 		return todo
 	}
 
 	delete(todo_item) {
-		// Note: if you're not sure about the contents of your array, 
-		// you should check the results of findIndex first
-		console.log('App model got delete notification from todo_item model', todo_item)
-		log("DEL App.todos is ", format(this.todos))
+		console.log('App got delete notification from model todo_item', todo_item)  //, 'state of todos before is', format(this.todos))
 
 		const indx = this.todos.findIndex(v => v == todo_item);
-		console.log('inx found was', indx)
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
-		// debug_report_app_state(this)
+
 		this.controller_footer.renderFooter()
-
-		// someArray4.splice(indx, indx >= 0 ? 1 : 0);
-		// log("", "check findIndex result first > someArray4 (nothing is removed) > ", format(someArray4));
-		// log(`**someArray4.length (should still be 3) ${someArray4.length}`);
-
-		// alternative implementation
-		// this.todos.splice(this.getIndexFromEl(e.target), 1);
-
 	}
 
-	
+
 	visualise_todoitem(todo_item) {
 		// create controller
 		let controller = new ControllerTodoItem(todo_item)
