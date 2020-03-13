@@ -111,3 +111,17 @@
 		// this.render();
 	}
 
+// HANDY
+
+function format(obj) {
+	return JSON.stringify(obj, null, " ");
+}
+
+function log(...txt) {
+	document.querySelector("pre").textContent = `${txt.join("\n")}\n`
+}
+
+function log_append(...txt) {
+	document.querySelector("pre").textContent += `${txt.join("\n")}\n`
+}
+

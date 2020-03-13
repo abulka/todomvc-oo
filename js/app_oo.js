@@ -5,20 +5,9 @@ Handlebars.registerHelper('eq', function (a, b, options) {
 });
 
 const util = new Util();
+
 var ENTER_KEY = 13;
 var ESCAPE_KEY = 27;
-
-function format(obj) {
-	return JSON.stringify(obj, null, " ");
-}
-
-function log(...txt) {
-	document.querySelector("pre").textContent = `${txt.join("\n")}\n`
-}
-
-function log_append(...txt) {
-	document.querySelector("pre").textContent += `${txt.join("\n")}\n`
-}
 
 
 //
@@ -73,8 +62,11 @@ class TodoItem {
 class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
 		this.todos = todos == undefined ? [] : todos;  // existing todos from persistence
-		this.controller_header
-		this.controller_footer
+
+		// Wire the permanent controllers
+		this.controller_header = new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
+		this.controller_footer = new ControllerFooter(this, 'footer')  // gui is footer el
+		this.controller_debug = new ControllerDebugDumpModels(this, 'pre.debug')
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
 	}
@@ -92,7 +84,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 	}
 
 	delete(todo_item) {
-		console.log('App got delete notification from model todo_item', todo_item)  //, 'state of todos before is', format(this.todos))
+		console.log('App got delete notification from model todo_item', todo_item)
 
 		const indx = this.todos.findIndex(v => v == todo_item);
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
@@ -354,13 +346,22 @@ class ControllerHeader {  // handles adding new items and toggling all as comple
 }
 
 class ControllerDebugDumpModels {
-	constructor(app) {
+	constructor(app, gui) {
 		this.app = app
+		this.gui = gui
 		document.addEventListener("notify all called", (event) => { this.notify(event) })
 	}
 
+	format(obj) {
+		return JSON.stringify(obj, null, " ");
+	}
+	
+	log(...txt) {
+		document.querySelector(this.gui).textContent = `${txt.join("\n")}\n`
+	}
+
 	notify(event) {
-		log("App.todos is (official)", format(this.app.todos))
+		this.log("App.todos model is", this.format(this.app.todos))
 	}
 
 }
