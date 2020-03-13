@@ -78,7 +78,7 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		let todo = new TodoItem(title, id, completed);
 		this.todos.push(todo);
 
-		this.visualise_todoitem(todo)
+		new ControllerTodoItem(todo, this)  // controller knows about app
 		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 
 		notify_all("app model changed", this)
@@ -96,21 +96,6 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 
 		notify_all("app model changed", this)
 		this.save()
-	}
-
-
-	visualise_todoitem(todo_item) {
-		let controller = new ControllerTodoItem(todo_item, this)  // controller knows about app
-
-		// wire todo item controller to listen for these internal events
-		controller.notify_func = controller.notify.bind(controller)  // remember exact signature of func so that we can later remove listener
-		document.addEventListener("modified todoitem", controller.notify_func)  // from todo model
-		document.addEventListener("deleted todoitem", controller.notify_func)  // from todo model
-		document.addEventListener("filter changed", controller.notify_func)  // from footer controller
-
-		// wire gui changes -> controller (using dom events) not done here, done in ControllerTodoItem constructor
-
-		return todo_item
 	}
 
 	_convert_to_array_of_dicts() {
@@ -171,6 +156,16 @@ class ControllerTodoItem {
 		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
+
+		// Gui events
+		// see bind_events() below, gui el gets re-bound after each gui el rebuild, which happens after each modified event notification
+
+		// Internal events
+		this.notify_func = this.notify.bind(this)  // remember exact signature of func so that we can later remove listener
+		document.addEventListener("modified todoitem", this.notify_func)  // event will come from todo model
+		document.addEventListener("deleted todoitem", this.notify_func)  // event will come from todo model
+		document.addEventListener("filter changed", this.notify_func)  // event will come from footer controller
+
 	}
 
 	bind_events($gui_li) {
