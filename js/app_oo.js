@@ -9,7 +9,6 @@ const util = new Util();
 var ENTER_KEY = 13;
 var ESCAPE_KEY = 27;
 
-
 //
 // Model
 //
@@ -48,24 +47,24 @@ class TodoItem {
 	}
 
 	delete() {
-		notify_all("deleted todoitem", this);
+		notify_all("deleted todoitem", this)
 	}
 
 	dirty() {
-		notify_all("modified todoitem", this);
+		notify_all("modified todoitem", this)
 	}
 }
 
+//
+// App 
+//
 
-// App knows everything, owns the list of todo models, creates all controllers
-
-
-class App {  // aggregates all the sub models into one housing, with some business logic
+class App {  // knows everything, owns the list of todo models, creates all controllers, with some business logic
 	constructor(todos) {
-		this.todos = todos == undefined ? [] : todos;  // existing todos from persistence
+		this.todos = todos == undefined ? [] : todos  // existing todos from persistence
 		this.filter = 'all'  // options are: all, active, completed
 
-		// Wire the permanent controllers
+		// Create the permanent controllers - todo controllers are added as needed
 		new ControllerDebugDumpModels(this, 'pre.debug')
 		new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
 		new ControllerFooter(this, 'footer')  // gui is footer el
@@ -132,9 +131,9 @@ class App {  // aggregates all the sub models into one housing, with some busine
 	}
 }
 
-
+//
 // Controllers / Mediators
-
+//
 
 class ControllerTodoItem {
 	constructor(model_ref, app) {

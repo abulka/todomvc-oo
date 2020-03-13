@@ -1,5 +1,21 @@
 /*
 	Various notes.
+
+	Controllers receive
+		- GUI events from DOM and 
+		- Internal events from model and other controllers
+
+	their job is to handle the gui encoding/decoding and then delegate as soon as possible
+	to the model or the app.
+
+	Model is dumb and doesn't know about GUI of course, nor about app.
+
+	App holds refs to models and creates controllers.  
+	Binding of controllers to events happens in controllers themselves, though could potentially be centralised
+	and done by the App.
+
+	App can hold visual model state e.g. current 'filter'
+	Controllers point back to app, in order to get at this state if needed.
 */
 
 
@@ -88,7 +104,7 @@
 		}
 
 		// else if (event.type == .....
-		
+
 	}
 
 // class App {
