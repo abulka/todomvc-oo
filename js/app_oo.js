@@ -326,29 +326,25 @@ class ControllerTodoItem {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
 
 		if (event.type == "filter changed") {
-			let filter = this.last_filter = event.detail.data.filter
-			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${filter}', applying necessary visibility`)
+			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
 			console.assert(event.detail.from == this.controller_footer)
-			this.apply_filter(filter)
+			this.apply_filter(event.detail.data.filter)
 		}
-		else if (this.model_ref.id == event.detail.from.id) {  // only process if this controller matches the todoitem model - more efficient
-			console.log(`\tcontroller for ${this.model_ref.title} got notified OK`)
-			if (event.type == "modified todoitem") {
-				let li = this.todoTemplate(this.model_ref.as_dict)
-				let $res = this._insert(li)
-				this.bind_events($res)
+		else if (event.type == "modified todoitem" && this.model_ref.id == event.detail.from.id) {
+			console.log(`\tcontroller for ${this.model_ref.title} got notified of modification, updating gui`)
+			let li = this.todoTemplate(this.model_ref.as_dict)
+			let $res = this._insert(li)
+			this.bind_events($res)
 
-				// cheat by accessing footer controller directly
-				this.apply_filter(this.controller_footer.filter)
-				this.controller_footer.renderFooter()
+			// cheat by accessing footer controller directly
+			this.apply_filter(this.controller_footer.filter)
+			this.controller_footer.renderFooter()
 		}
-			else if (event.type == "deleted todoitem") {
-				this.unwire()
-			}
+		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
+			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
+			this.unwire()
 		}
-		else {
-			console.log(`... controller for '${this.model_ref.title}' ignoring event targeting '${event.detail.from.title}'`)
-		}
+
 	}
 
 }
