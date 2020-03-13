@@ -75,13 +75,20 @@
 	}
 
 	notify(event) {
+
+		// could potentially wire different events to different functions of the todo item controller but that
+		// would make the unwiring a little mnore tedious, since have to remember notification function signatures to 
+		// de-register the listener (see copious notes below)
+
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
 		if (event.type == "filter changed") {  // sent from footer controller
 			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
 			console.assert(event.detail.from == this.app.controller_footer, event.detail.from)
 			// ...
-	}
-		// ...
+		}
+
+		// else if (event.type == .....
+		
 	}
 
 // class App {
@@ -128,6 +135,31 @@
 		// this.render();
 	}
 
+
+// class ControllerHeader {  // handles adding new items and toggling all as completed etc.
+
+		constructor(app, id) {
+			// Internal events (none)
+		}
+	
+	
+		toggleAll(e) {
+			var isChecked = $(e.target).prop('checked');
+	
+			// oo version simply changes model directly and internal notifications take care of the rest
+			this.app.todos.forEach(function (todo) {
+				todo.completed = isChecked;
+			});
+	
+			// this.render();  <---- jquery needs to re-render everything
+		}
+	
+		// notify(event) {  // there are no internal notifications from anyone, all traffic is from gui -> this controller
+		//  
+		// }
+	}
+	
+	
 // HANDY
 
 function format(obj) {

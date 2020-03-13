@@ -254,7 +254,6 @@ class ControllerTodoItem {
 
 			// cheat by accessing app
 			this.apply_filter(this.app.filter)
-			// this.app.controller_footer.renderFooter()  // TODO should this be replaced by an event notification?
 			notify_all("render footer", this)
 
 		}
@@ -268,13 +267,16 @@ class ControllerTodoItem {
 }
 
 
-class ControllerHeader {  // handles adding new items and toggling all as completed etc.
+class ControllerHeader {  // handles adding new items and toggling all as completed/not completed
 	constructor(app, id) {
 		this.app = app
 		this.gui_input = id  // not used cos can derive gui from $(e.target)
 
+		// Gui events -> this controller
 		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
 		$('.toggle-all').on('change', this.toggleAll.bind(this))
+
+		// No internal events, thus no notify() method needed in this class
 	}
 
 	on_keyup(e) {
@@ -296,13 +298,7 @@ class ControllerHeader {  // handles adding new items and toggling all as comple
 		this.app.todos.forEach(function (todo) {
 			todo.completed = isChecked;
 		});
-
-		// this.render();
 	}
-
-	// notify(event) {  // not used yet, seems there are no notifications from the app model
-	//  
-	// }
 }
 
 
