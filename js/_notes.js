@@ -5,6 +5,14 @@
 
 // class ControllerTodoItem {
 
+	class ControllerTodoItem {
+		constructor(model_ref, app) {
+			// ...
+			this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
+										  // if there wasn't a need for bind() then we could just refer to the this.notify function normally
+		}
+	}
+
 	unwire() {
 		$(`li[data-id=${this.gui_id}]`).remove()
 		this.gui_id = "gone"  // protect against using this controller again

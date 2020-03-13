@@ -94,11 +94,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 
 	visualise_todoitem(todo_item) {
-		let controller = new ControllerTodoItem(todo_item)
-
-		// hack wiring, controller know about each other?!!
-		controller.controller_header = this.controller_header
-		controller.controller_footer = this.controller_footer
+		let controller = new ControllerTodoItem(todo_item, this)  // controller knows about app
 
 		// wire todo item controller to listen for these internal events
 		controller.notify_func = controller.notify.bind(controller)  // remember exact signature of func so that we can later remove listener
@@ -138,15 +134,12 @@ class App {  // aggregates all the sub models into one housing, with some busine
 // Controllers / Mediators
 
 class ControllerTodoItem {
-	constructor(model_ref) {
+	constructor(model_ref, app) {
 		this.model_ref = model_ref
+		this.app = app
 		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
-									  // if there wasn't a need for bind() then we could just refer to the this.notify function normally
-		// hack wiring
-		this.controller_header  // TODO we don't need access to this, remove
-		this.controller_footer
 	}
 
 	bind_events($gui_li) {
@@ -208,7 +201,7 @@ class ControllerTodoItem {
 		$(`li[data-id=${this.gui_id}]`).remove()
 		this.gui_id = "gone"  // protect against using this controller again
 
-		// stop referencing the todo item controller by removing any controller document listeners
+		// stop referencing this todo item controller by removing any document listeners to this controller's notify_func
 		document.removeEventListener("modified todoitem", this.notify_func, false)
 		document.removeEventListener("deleted todoitem", this.notify_func, false)
 		document.removeEventListener("filter changed", this.notify_func, false)
@@ -243,7 +236,7 @@ class ControllerTodoItem {
 
 		if (event.type == "filter changed") {
 			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
-			console.assert(event.detail.from == this.controller_footer)
+			console.assert(event.detail.from == this.app.controller_footer, event.detail.from)
 			this.apply_filter(event.detail.data.filter)
 		}
 		else if (event.type == "modified todoitem" && this.model_ref.id == event.detail.from.id) {
@@ -252,9 +245,9 @@ class ControllerTodoItem {
 			let $res = this._insert_gui(li)
 			this.bind_events($res)
 
-			// cheat by accessing footer controller directly
-			this.apply_filter(this.controller_footer.filter)
-			this.controller_footer.renderFooter()
+			// cheat by accessing app
+			this.apply_filter(this.app.controller_footer.filter)
+			this.app.controller_footer.renderFooter()
 		}
 		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
