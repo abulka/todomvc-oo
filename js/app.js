@@ -8,7 +8,7 @@
 	let app = new App()
 
 	// Add a couple of todo items
-	app.add("title1", "id1", false)
-	app.add("title2", "id2", false)
+	// app.add("title1", "id1", false)
+	// app.add("title2", "id2", false)
 
 })(window);

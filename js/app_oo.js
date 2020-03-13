@@ -60,8 +60,8 @@ class TodoItem {
 //
 
 class App {  // knows everything, owns the list of todo models, creates all controllers, with some business logic
-	constructor(todos) {
-		this.todos = todos == undefined ? [] : todos  // existing todos from persistence
+	constructor() {
+		this.todos = []
 		this.filter = 'all'  // options are: all, active, completed
 
 		// Create the permanent controllers - todo controllers are added as needed
@@ -70,9 +70,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		new ControllerFooter(this, 'footer')  // gui is footer el
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
+
+		this.load()
 	}
 
-	add(title, id, completed) {
+	add(title, id, completed, suppress_save) {
 		let todo = new TodoItem(title, id, completed);
 		this.todos.push(todo);
 
@@ -80,6 +82,8 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 
 		notify_all("app model changed", this)
+		if (suppress_save == undefined)
+			this.save()
 
 		return todo
 	}
@@ -91,6 +95,7 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
 
 		notify_all("app model changed", this)
+		this.save()
 	}
 
 
@@ -106,6 +111,30 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		// wire gui changes -> controller (using dom events) not done here, done in ControllerTodoItem constructor
 
 		return todo_item
+	}
+
+	_convert_to_array_of_dicts() {
+		// this.todos
+		let result = []
+		this.todos.forEach(function (todo) {
+			result.push(todo.as_dict)
+		})
+		return result
+	}
+
+	save() {
+		let todos = this._convert_to_array_of_dicts()
+		console.log('PERSISTENCE SAVE', todos)
+		util.store('todos-oo', todos);
+	}
+
+	load() {
+		let todos_array = util.store('todos-oo')
+		console.log('PERSISTENCE LOAD', todos_array)
+		todos_array.forEach(function (todo) {
+			this.add(todo.title, todo.id, todo.completed, true)  // true means suppress_save
+		}, this)
+		notify_all("app model changed", this)  // no listeners, but debug listener should kick in displaying the model
 	}
 
 	destroyCompleted() {
