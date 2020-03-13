@@ -195,7 +195,7 @@ class ControllerTodoItem {
 		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
 
 		// hack wiring
-		this.controller_header
+		this.controller_header  // TODO we don't need access to this, remove
 		this.controller_footer
 	}
 
@@ -308,6 +308,17 @@ class ControllerTodoItem {
 		return $res
 	}
 
+	_replace(li) {
+		let $res
+		let $existing_li = $(`li[data-id=${this.gui_id}]`)
+		let $res_old = $existing_li.replaceWith(li)
+		console.assert($existing_li == $res_old)
+		let $res_again = $(`li[data-id=${this.gui_id}]`)
+		// console.assert($res == $res_again)
+		// return $res
+		return $res_again
+	}
+
 	apply_filter(filter) {
 		let $el = $(`li[data-id=${this.gui_id}]`)
 		if (filter == 'all')
@@ -342,9 +353,14 @@ class ControllerTodoItem {
 				else {
 					// Gui element already exists, simply update it
 					console.log(`       controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
-					$(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
-					$(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
-					$(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
+
+					// $(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
+					// $(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
+					// $(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
+
+					let li = this.todoTemplate(this.model_ref.as_dict)
+					let $res = this._replace(li)
+					this.bind_events($res)					
 				}
 				this.apply_filter(this.controller_footer.filter)  // cheat by accessing footer controller directly
 				this.controller_footer.renderFooter()
