@@ -73,7 +73,7 @@ class TodoItem {
 class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
 		this._todos = todos == undefined ? [] : todos;  // existing todos from persistence
-		this.controller_app
+		this.controller_header
 		this.controller_footer
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
@@ -125,7 +125,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
 
 		// hack wiring, controller know about each other?!!
-		controller.controller_app = this.controller_app
+		controller.controller_header = this.controller_header
 		controller.controller_footer = this.controller_footer
 
 		// controllers.push(controller)
@@ -195,7 +195,7 @@ class ControllerTodoItem {
 		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
 
 		// hack wiring
-		this.controller_app
+		this.controller_header
 		this.controller_footer
 	}
 
@@ -403,7 +403,7 @@ class ControllerFooter {  // handles filters, reporting number of items
 }
 
 
-class ControllerApp {  // handles adding new items and toggling all as completed etc.
+class ControllerHeader {  // handles adding new items and toggling all as completed etc.
 	constructor(app, id) {
 		this.app = app
 		this.gui_input = id  // not used cos can derive gui from $(e.target)

@@ -8,7 +8,7 @@
 	let app = new App()
 
 	// Wire the controllers
-	app.controller_app = new ControllerApp(app, '.new-todo')  // gui is the input el with this class
+	app.controller_header = new ControllerHeader(app, '.new-todo')  // gui is the input el with this class
 	app.controller_footer = new ControllerFooter(app, 'footer')  // gui is footer el
 	app.controller_debug = new ControllerDebugDumpModels(app)
 
