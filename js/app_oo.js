@@ -38,7 +38,7 @@ class TodoItem {
 
 	set title(v) {
 		this._title = v;
-		notify_all("modified todoitem", this);
+		this.dirty()
 	}
 
 	get completed() {
@@ -47,7 +47,7 @@ class TodoItem {
 
 	set completed(v) {
 		this._completed = v;
-		notify_all("modified todoitem", this);
+		this.dirty()
 	}
 
 	get as_dict() {
