@@ -298,22 +298,16 @@ class ControllerTodoItem {
 	}
 
 	_insert(li) {
-		// creates initial li, appends after last li or replaces existing li - as necessary
+		// inserts or replaces li in 'ul.todo-list', returns the new $(li)
 		let $existing_li = $(`li[data-id=${this.gui_id}]`)
-		let $res
-		if ($existing_li.length == 1) {  // replace
-			$existing_li.replaceWith(li)  // returns old li, ignore
-			$res = $(`li[data-id=${this.gui_id}]`)
-		}
-		else {
-			if ($('ul.todo-list li').last().length == 0) {  // no last element to insert after so append instead
-				$('ul.todo-list').append($(li))  // returns the ul not the inserted li, so need to then find the last li
-				$res = $('ul.todo-list li').last()
-			}
-			else
-				$res = $(li).insertAfter($('ul.todo-list li').last())
-		}
-		return $res
+
+		if ($existing_li.length == 1)
+			$existing_li.replaceWith(li)  // replace existing li
+		else if ($('ul.todo-list li').last().length == 0)
+			$('ul.todo-list').append($(li))  // create initial li
+		else
+			$(li).insertAfter($('ul.todo-list li').last())  // append after last li
+		return $(`li[data-id=${this.gui_id}]`)
 	}
 
 	apply_filter(filter) {
@@ -334,15 +328,18 @@ class ControllerTodoItem {
 		if (event.type == "filter changed") {
 			let todo_item = event.detail.data.todo_item
 			let filter = this.last_filter = event.detail.data.filter
-			console.log('       controller for ${this.model_ref.title} got notified of filter changed', this.model_ref.id, 'saying', filter, 'todo_item is', todo_item)
+			console.log('\tcontroller for ${this.model_ref.title} got notified of filter changed', this.model_ref.id, 'saying', filter, 'todo_item is', todo_item)
 			this.apply_filter(filter)
 		}
-		else if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process if this controller matches the todoitem model - more efficient
+		else if (this.model_ref.id == event.detail.from.id) {  // only process if this controller matches the todoitem model - more efficient
+			console.log(`\tcontroller for ${this.model_ref.title} got notified OK`)
 			if (event.type == "modified todoitem") {
 				let li = this.todoTemplate(this.model_ref.as_dict)
 				let $res = this._insert(li)
-				this.bind_events($res)					
-				this.apply_filter(this.controller_footer.filter)  // cheat by accessing footer controller directly
+				this.bind_events($res)
+
+				// cheat by accessing footer controller directly
+				this.apply_filter(this.controller_footer.filter)
 				this.controller_footer.renderFooter()
 		}
 			else if (event.type == "deleted todoitem") {
@@ -350,7 +347,7 @@ class ControllerTodoItem {
 			}
 		}
 		else {
-			console.log(`   ... controller for '${this.model_ref.title}' ignoring event targeting '${event.detail.from.title}'`)
+			console.log(`... controller for '${this.model_ref.title}' ignoring event targeting '${event.detail.from.title}'`)
 		}
 	}
 
