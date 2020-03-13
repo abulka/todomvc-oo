@@ -11,7 +11,7 @@ var ESCAPE_KEY = 27;
 
 
 //
-// Models
+// Model
 //
 
 class TodoItem {
@@ -57,16 +57,17 @@ class TodoItem {
 }
 
 
-// App knows everything
+// App knows everything, owns the list of todo models, creates all controllers
+
 
 class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
 		this.todos = todos == undefined ? [] : todos;  // existing todos from persistence
 
 		// Wire the permanent controllers
-		this.controller_header = new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
+		new ControllerDebugDumpModels(this, 'pre.debug')
+		new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
 		this.controller_footer = new ControllerFooter(this, 'footer')  // gui is footer el
-		this.controller_debug = new ControllerDebugDumpModels(this, 'pre.debug')
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
 	}
@@ -107,6 +108,10 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		return todo_item
 	}
 
+	get filter() {
+		return this.controller_footer.filter
+	}
+
 	destroyCompleted() {
 		this.getCompletedTodos().forEach(function (todo) {
 			todo.delete()
@@ -132,6 +137,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 
 // Controllers / Mediators
+
 
 class ControllerTodoItem {
 	constructor(model_ref, app) {
@@ -234,9 +240,8 @@ class ControllerTodoItem {
 	notify(event) {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
 
-		if (event.type == "filter changed") {
+		if (event.type == "filter changed") {  // sent from footer controller
 			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
-			console.assert(event.detail.from == this.app.controller_footer, event.detail.from)
 			this.apply_filter(event.detail.data.filter)
 		}
 		else if (event.type == "modified todoitem" && this.model_ref.id == event.detail.from.id) {
@@ -246,8 +251,8 @@ class ControllerTodoItem {
 			this.bind_events($res)
 
 			// cheat by accessing app
-			this.apply_filter(this.app.controller_footer.filter)
-			this.app.controller_footer.renderFooter()
+			this.apply_filter(this.app.filter)
+			this.app.controller_footer.renderFooter()  // TODO should this be replaced by an event notification?
 		}
 		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
@@ -256,6 +261,44 @@ class ControllerTodoItem {
 
 	}
 
+}
+
+
+class ControllerHeader {  // handles adding new items and toggling all as completed etc.
+	constructor(app, id) {
+		this.app = app
+		this.gui_input = id  // not used cos can derive gui from $(e.target)
+
+		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
+		$('.toggle-all').on('change', this.toggleAll.bind(this))
+	}
+
+	on_keyup(e) {
+		// this.welcome_model.message = $(e.target).val() 
+		var $input = $(e.target);
+		var val = $input.val().trim();
+
+		if (e.which !== ENTER_KEY || !val)
+			return;
+
+		$input.val('');
+
+		this.app.add(val, util.uuid(), false)  // title, id, completed
+	}
+
+	toggleAll(e) {
+		var isChecked = $(e.target).prop('checked');
+
+		this.app.todos.forEach(function (todo) {
+			todo.completed = isChecked;
+		});
+
+		// this.render();
+	}
+
+	// notify(event) {  // not used yet, seems there are no notifications from the app model
+	//  
+	// }
 }
 
 
@@ -300,43 +343,6 @@ class ControllerFooter {  // handles filters, reporting number of items
 
 }
 
-
-class ControllerHeader {  // handles adding new items and toggling all as completed etc.
-	constructor(app, id) {
-		this.app = app
-		this.gui_input = id  // not used cos can derive gui from $(e.target)
-
-		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
-		$('.toggle-all').on('change', this.toggleAll.bind(this))
-	}
-
-	on_keyup(e) {
-		// this.welcome_model.message = $(e.target).val() 
-		var $input = $(e.target);
-		var val = $input.val().trim();
-
-		if (e.which !== ENTER_KEY || !val)
-			return;
-
-		$input.val('');
-
-		this.app.add(val, util.uuid(), false)  // title, id, completed
-	}
-
-	toggleAll(e) {
-		var isChecked = $(e.target).prop('checked');
-
-		this.app.todos.forEach(function (todo) {
-			todo.completed = isChecked;
-		});
-
-		// this.render();
-	}
-
-	// notify(event) {  // not used yet, seems there are no notifications from the app model
-	//  
-	// }
-}
 
 class ControllerDebugDumpModels {
 	constructor(app, gui) {

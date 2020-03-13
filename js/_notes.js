@@ -74,6 +74,15 @@
 		// this.render();     <---- Jquery solution needs to re-render the entire list, oo solution does not
 	}
 
+	notify(event) {
+		console.assert(this.gui_id != 'gone', 'old controller being notified?')
+		if (event.type == "filter changed") {  // sent from footer controller
+			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
+			console.assert(event.detail.from == this.app.controller_footer, event.detail.from)
+			// ...
+	}
+		// ...
+	}
 
 // class App {
 
