@@ -298,10 +298,13 @@ class ControllerTodoItem {
 	}
 
 	_insert(li) {
+		// creates initial li, appends after last li or replaces existing li - as necessary
 		let $existing_li = $(`li[data-id=${this.gui_id}]`)
 		let $res
-		if ($existing_li.length == 1)
-			$res = this._replace(li)
+		if ($existing_li.length == 1) {  // replace
+			$existing_li.replaceWith(li)  // returns old li, ignore
+			$res = $(`li[data-id=${this.gui_id}]`)
+		}
 		else {
 			if ($('ul.todo-list li').last().length == 0) {  // no last element to insert after so append instead
 				$('ul.todo-list').append($(li))  // returns the ul not the inserted li, so need to then find the last li
@@ -311,17 +314,6 @@ class ControllerTodoItem {
 				$res = $(li).insertAfter($('ul.todo-list li').last())
 		}
 		return $res
-	}
-
-	_replace(li) {
-		let $res
-		let $existing_li = $(`li[data-id=${this.gui_id}]`)
-		let $res_old = $existing_li.replaceWith(li)
-		console.assert($existing_li == $res_old)
-		let $res_again = $(`li[data-id=${this.gui_id}]`)
-		// console.assert($res == $res_again)
-		// return $res
-		return $res_again
 	}
 
 	apply_filter(filter) {
