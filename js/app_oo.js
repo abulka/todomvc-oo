@@ -79,8 +79,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		this.visualise_todoitem(todo)
 		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 
-		// this.controller_footer.renderFooter()
-		notify_all("render footer", this)
+		notify_all("app model changed", this)
 
 		return todo
 	}
@@ -91,8 +90,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		const indx = this.todos.findIndex(v => v == todo_item);
 		this.todos.splice(indx, indx >= 0 ? 1 : 0);
 
-		// this.controller_footer.renderFooter()
-		notify_all("render footer", this)
+		notify_all("app model changed", this)
 	}
 
 
@@ -251,11 +249,7 @@ class ControllerTodoItem {
 			let li = this.todoTemplate(this.model_ref.as_dict)
 			let $res = this._insert_gui(li)
 			this.bind_events($res)
-
-			// cheat by accessing app
 			this.apply_filter(this.app.filter)
-			notify_all("render footer", this)
-
 		}
 		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
@@ -315,7 +309,8 @@ class ControllerFooter {  // handles filters, reporting number of items
 		$(this.gui_footer_selector).on('click', 'ul', this.filter_click.bind(this))
 
 		// Internal events
-		document.addEventListener("render footer", (event) => { this.notify(event) })
+		document.addEventListener("app model changed", (event) => { this.notify(event) })
+		document.addEventListener("modified todoitem", (event) => { this.notify(event) })
 	}
 
 	destroyCompleted(e) {
@@ -345,7 +340,7 @@ class ControllerFooter {  // handles filters, reporting number of items
 	}
 
 	notify(event) {
-		console.log("\tcontroller for footer got told to render footer")
+		console.log(`\tcontroller for footer got told to render footer cos '${event.type}'`)
 		this.renderFooter()
 	}
 
