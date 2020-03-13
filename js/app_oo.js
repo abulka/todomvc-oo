@@ -63,11 +63,12 @@ class TodoItem {
 class App {  // aggregates all the sub models into one housing, with some business logic
 	constructor(todos) {
 		this.todos = todos == undefined ? [] : todos;  // existing todos from persistence
+		this.filter = 'all'  // options are: all, active, completed
 
 		// Wire the permanent controllers
 		new ControllerDebugDumpModels(this, 'pre.debug')
 		new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
-		this.controller_footer = new ControllerFooter(this, 'footer')  // gui is footer el
+		new ControllerFooter(this, 'footer')  // gui is footer el
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
 	}
@@ -106,10 +107,6 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		// wire gui changes -> controller (using dom events) not done here, done in ControllerTodoItem constructor
 
 		return todo_item
-	}
-
-	get filter() {
-		return this.controller_footer.filter
 	}
 
 	destroyCompleted() {
@@ -302,8 +299,6 @@ class ControllerFooter {  // handles filters, reporting number of items
 		this.gui_footer_selector = footer_selector
 		this.footerTemplate = Handlebars.compile($('#footer-template').html());
 		  
-		this.filter = 'all'  // options are: all, active, completed
-
 		// Gui events
 		$(this.gui_footer_selector).on('click', '.clear-completed', this.destroyCompleted.bind(this))
 		$(this.gui_footer_selector).on('click', 'ul', this.filter_click.bind(this))
@@ -324,6 +319,14 @@ class ControllerFooter {  // handles filters, reporting number of items
 
 		// this broadcast goes to all the todoitem controllers
 		notify_all("filter changed", this, {'filter': this.filter});		
+	}
+
+	get filter() {
+		return this.app.filter
+	}
+
+	set filter(val) {
+		this.app.filter = val
 	}
 
 	renderFooter() {
@@ -363,7 +366,7 @@ class ControllerDebugDumpModels {
 	}
 
 	notify(event) {
-		this.log("App.todos model is", this.format(this.app.todos))
+		this.log("App.todos model:", this.format(this.app.todos), `\nApp.filter: '${this.app.filter}'`)
 	}
 
 }
