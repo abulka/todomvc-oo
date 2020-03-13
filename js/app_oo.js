@@ -122,7 +122,7 @@ class App {  // aggregates all the sub models into one housing, with some busine
 	
 	visualise_todoitem(todo_item) {
 		// create controller
-		let controller = new ControllerTodoItem(todo_item, undefined)  // gui is undefined
+		let controller = new ControllerTodoItem(todo_item)
 
 		// hack wiring, controller know about each other?!!
 		controller.controller_header = this.controller_header
@@ -187,9 +187,9 @@ class App {  // aggregates all the sub models into one housing, with some busine
 // let controllers = []  // what's the point of this, nobody loops through it
 
 class ControllerTodoItem {
-	constructor(model_ref, gui_id) {
+	constructor(model_ref) {
 		this.model_ref = model_ref
-		this.gui_id = gui_id  // <li> data-id
+		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
 		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
@@ -298,13 +298,18 @@ class ControllerTodoItem {
 	}
 
 	_insert(li) {
+		let $existing_li = $(`li[data-id=${this.gui_id}]`)
 		let $res
-		if ($('ul.todo-list li').last().length == 0) {  // no last element to insert after so append instead
-			$('ul.todo-list').append($(li))  // returns the ul not the inserted li, so need to then find the last li
-			$res = $('ul.todo-list li').last()
+		if ($existing_li.length == 1)
+			$res = this._replace(li)
+		else {
+			if ($('ul.todo-list li').last().length == 0) {  // no last element to insert after so append instead
+				$('ul.todo-list').append($(li))  // returns the ul not the inserted li, so need to then find the last li
+				$res = $('ul.todo-list li').last()
+			}
+			else
+				$res = $(li).insertAfter($('ul.todo-list li').last())
 		}
-		else
-			$res = $(li).insertAfter($('ul.todo-list li').last())
 		return $res
 	}
 
@@ -337,31 +342,14 @@ class ControllerTodoItem {
 		if (event.type == "filter changed") {
 			let todo_item = event.detail.data.todo_item
 			let filter = this.last_filter = event.detail.data.filter
-			console.log('filter changed notification received by todo item controller', this.model_ref.id, 'saying', filter, 'todo_item is', todo_item)
+			console.log('       controller for ${this.model_ref.title} got notified of filter changed', this.model_ref.id, 'saying', filter, 'todo_item is', todo_item)
 			this.apply_filter(filter)
 		}
 		else if (this.model_ref.id == event.detail.from.id || this.gui_id == undefined) {  // only process if this controller matches the todoitem model - more efficient
 			if (event.type == "modified todoitem") {
-				if (this.gui_id == undefined) {
-					// Gui element has not been created yet, so build it and inject it
-					console.log(`       controller for ${this.model_ref.title} got notified to build initial gui`)
-					this.gui_id = this.model_ref.id  // use id of model for the gui <li> data-id
-					let li = this.todoTemplate(this.model_ref.as_dict)
-					let $res = this._insert(li)
-					this.bind_events($res)
-				}
-				else {
-					// Gui element already exists, simply update it
-					console.log(`       controller for '${this.model_ref.title}' got notified with detail ${JSON.stringify(event.detail)}`)
-
-					// $(`li[data-id=${this.gui_id}] div label`).text(this.model_ref.title)
-					// $(`li[data-id=${this.gui_id}]`).toggleClass('completed', this.model_ref._completed)
-					// $(`li[data-id=${this.gui_id}] div input.toggle`).prop('checked', this.model_ref._completed)  // ensure gui checked is accurate
-
-					let li = this.todoTemplate(this.model_ref.as_dict)
-					let $res = this._replace(li)
-					this.bind_events($res)					
-				}
+				let li = this.todoTemplate(this.model_ref.as_dict)
+				let $res = this._insert(li)
+				this.bind_events($res)					
 				this.apply_filter(this.controller_footer.filter)  // cheat by accessing footer controller directly
 				this.controller_footer.renderFooter()
 		}
