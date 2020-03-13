@@ -1,4 +1,4 @@
-// Includes app_oo.js which also contains .controllers
+// Includes app_oo.js
 
 (function (window) {
 	'use strict';

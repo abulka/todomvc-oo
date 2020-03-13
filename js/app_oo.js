@@ -86,8 +86,6 @@ class App {  // aggregates all the sub models into one housing, with some busine
 	add(title, id, completed) {
 		let todo = new TodoItem(title, id, completed);
 		this._todos.push(todo);
-		// don't notify any controllers cos none have been wired yet
-		// debug_report_app_state(this)
 
 		this.visualise_todoitem(todo)
 		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
@@ -127,8 +125,6 @@ class App {  // aggregates all the sub models into one housing, with some busine
 		// hack wiring, controller know about each other?!!
 		controller.controller_header = this.controller_header
 		controller.controller_footer = this.controller_footer
-
-		// controllers.push(controller)
 
 		// wire model changes -> controller (using observer pattern)
 		/*
@@ -184,16 +180,13 @@ class App {  // aggregates all the sub models into one housing, with some busine
 
 // Controllers / Mediators
 
-// let controllers = []  // what's the point of this, nobody loops through it
-
 class ControllerTodoItem {
 	constructor(model_ref) {
 		this.model_ref = model_ref
 		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
-		// if there wasn't a need for bind() then we could just refer to the this.notify function normally
-
+									  // if there wasn't a need for bind() then we could just refer to the this.notify function normally
 		// hack wiring
 		this.controller_header  // TODO we don't need access to this, remove
 		this.controller_footer
@@ -210,9 +203,6 @@ class ControllerTodoItem {
 
 	toggle(e) {
 		this.model_ref.completed = !this.model_ref.completed
-		// var i = this.getIndexFromEl(e.target);  // THIS SEARCHING NOT NEEDED COS WE HAVE INDIV. CONTROLLERS
-		// this.todos[i].completed = !this.todos[i].completed;
-		// this.render();  // THIS COMPLETE REWRITE OF ALL THE TODOS NOT NEEDED COS GRANULAR UPDATE OF WHAT'S ALREADY THERE
 	}
 
 	editingMode(e) {
@@ -245,59 +235,29 @@ class ControllerTodoItem {
 			this.destroy(e);
 			return;
 		} else {
-			// this.todos[this.getIndexFromEl(el)].title = val;
 			this.model_ref.title = val
 		}
 
 		$(e.target).closest('li').removeClass('editing')
-		// this.render();
 	}
 
 	destroy(e) {
-		console.log(`       controller for '${this.model_ref.title}' got event from GUI of a DELETE`)
-		this.model_ref.delete()
-		// this.unwire()
+		console.log(`controller for '${this.model_ref.title}' got DELETE user event from GUI ***`)
+		this.model_ref.delete()  // we will eventually get a notification from the model to delete this controller instance
 	}
 
-	unwire() {
+	_delete_gui() {
+		// delete the GUI element
 		$(`li[data-id=${this.gui_id}]`).remove()
 		this.gui_id = "gone"  // protect against using this controller again
 
-		/*
-		Remove the event listener from the document - HARD cos functions don't match cos of the bind !
-		solution is to remember exact function signature as .f attribute when its created.
-			document.removeEventListener("modified todoitem", this.notify, false)  // won't work
-		TIP: use getEventListeners(document) to list all the listeners
-		esp. getEventListeners(document)["modified todoitem"][0].listener
-		or use chrome elements inspector and on rhs is the listeners tab 
-		*/
-		document.removeEventListener("modified todoitem", this.notify_func, false)  // important!
-		document.removeEventListener("deleted todoitem", this.notify_func, false)  // important!
-		document.removeEventListener("filter changed", this.notify_func, false)  // important!
-
-		/*
-		todo
-		- delete the todo item model
-		- delete the todo item controller and associated gui AND associated bindings
-			presumably deleting the gui el will delete the bindings, phew
-		- remove todo item from controllers list  // not sure if the controllers list will survive
-		- remove any controller document listener using .removeEventListener( controller func )
-		- remove todo item from App._todos
-
-		Gosh - so much to do, compared to the jquery example:
-			this.todos.splice(this.getIndexFromEl(e.target), 1);
-			this.render();
-
-		Need to think about this.  Do we need a pointer to the App or
-		some higher level, or can we just send an event perhaps?
-		
-		Also, what benefit does the App model
-		have besides an .add() method. The list of todos is not used by anyone yet
-		except perhaps when we implement persistence?
-		*/
+		// stop referencing the todo item controller by removing any controller document listeners
+		document.removeEventListener("modified todoitem", this.notify_func, false)
+		document.removeEventListener("deleted todoitem", this.notify_func, false)
+		document.removeEventListener("filter changed", this.notify_func, false)
 	}
 
-	_insert(li) {
+	_insert_gui(li) {
 		// inserts or replaces li in 'ul.todo-list', returns the new $(li)
 		let $existing_li = $(`li[data-id=${this.gui_id}]`)
 
@@ -331,9 +291,9 @@ class ControllerTodoItem {
 			this.apply_filter(event.detail.data.filter)
 		}
 		else if (event.type == "modified todoitem" && this.model_ref.id == event.detail.from.id) {
-			console.log(`\tcontroller for ${this.model_ref.title} got notified of modification, updating gui`)
+			console.log(`\tcontroller for '${this.model_ref.title}' got notified of modification, updating gui`)
 			let li = this.todoTemplate(this.model_ref.as_dict)
-			let $res = this._insert(li)
+			let $res = this._insert_gui(li)
 			this.bind_events($res)
 
 			// cheat by accessing footer controller directly
@@ -342,7 +302,7 @@ class ControllerTodoItem {
 		}
 		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
-			this.unwire()
+			this._delete_gui()
 		}
 
 	}
