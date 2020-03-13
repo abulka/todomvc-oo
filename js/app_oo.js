@@ -275,6 +275,7 @@ class ControllerTodoItem {
 			let $res = this._insert_gui(li)
 			this.bind_events($res)
 			this.apply_filter(this.app.filter)
+			this.app.save()
 		}
 		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
