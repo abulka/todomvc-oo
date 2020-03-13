@@ -326,9 +326,9 @@ class ControllerTodoItem {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
 
 		if (event.type == "filter changed") {
-			let todo_item = event.detail.data.todo_item
 			let filter = this.last_filter = event.detail.data.filter
-			console.log('\tcontroller for ${this.model_ref.title} got notified of filter changed', this.model_ref.id, 'saying', filter, 'todo_item is', todo_item)
+			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${filter}', applying necessary visibility`)
+			console.assert(event.detail.from == this.controller_footer)
 			this.apply_filter(filter)
 		}
 		else if (this.model_ref.id == event.detail.from.id) {  // only process if this controller matches the todoitem model - more efficient
@@ -375,6 +375,9 @@ class ControllerFooter {  // handles filters, reporting number of items
 		var $el = $(e.target).closest('li');
 		this.filter = $el.find('a').attr("name")
 		this.renderFooter()
+
+		// this broadcast goes to all the todoitem controllers
+		notify_all("filter changed", this, {'filter': this.filter});		
 	}
 
 	renderFooter() {
@@ -388,9 +391,6 @@ class ControllerFooter {  // handles filters, reporting number of items
 		});
 
 		$('.footer').toggle(todoCount > 0).html(template);
-
-		// this broadcast goes to all the todoitem controllers
-		notify_all("filter changed", this, {'filter': this.filter});		
 	}
 
 }
