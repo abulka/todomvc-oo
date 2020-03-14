@@ -64,17 +64,12 @@
 		</section>
 		<footer class="info">
 			<p>Double-click to edit a todo</p>
-			<!-- Remove the below line ↓ -->
-			<p>Template by <a href="http://sindresorhus.com">Sindre Sorhus</a></p>
-			<!-- Change this out with your name and url ↓ -->
-			<p>Created by <a href="http://todomvc.com">you</a></p>
+			<p>Created by <a href="http://www.andypatterns.com">Andy Bulka</a></p>
 			<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
 		</footer>
 
-		<pre class="debug">
+		<!-- templates -->
 
-		</pre>
-		
 		<script id="todo-template" type="text/x-handlebars-template">
 			{{#this}}
 			<li {{#if completed}}class="completed"{{/if}} data-id="{{id}}">
@@ -103,6 +98,11 @@
 			</ul>
 			{{#if completedTodos}}<button class="clear-completed">Clear completed</button>{{/if}}
 		</script>
+
+		<!-- debug area -->
+		<label style="font-size: smaller; color: darkgray;"><input type="checkbox" name="debug" value="value" style="vertical-align:middle;">Debug</label>
+		<pre style="display: none;" class="debug">
+		</pre>
 
 		<!-- Scripts here. Don't remove ↓ -->
 		<script src="node_modules/todomvc-common/base.js"></script>

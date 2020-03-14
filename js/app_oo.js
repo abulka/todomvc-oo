@@ -376,6 +376,11 @@ class ControllerDebugDumpModels {
 	constructor(app, gui) {
 		this.app = app
 		this.gui = gui
+
+		// Gui events
+		$('input[name="debug"]').on('change', (event) => { this.display_debug_info(event) })
+
+		// Internal events
 		document.addEventListener("notify all called", (event) => { this.notify(event) })
 	}
 
@@ -385,6 +390,10 @@ class ControllerDebugDumpModels {
 	
 	log(...txt) {
 		document.querySelector(this.gui).textContent = `${txt.join("\n")}\n`
+	}
+
+	display_debug_info(event) {
+		document.querySelector(this.gui).style.display = event.target.checked ? 'block' : 'none'
 	}
 
 	notify(event) {
