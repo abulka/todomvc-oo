@@ -74,18 +74,16 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		this.load()
 	}
 
-	add(title, id, completed, options) {  // options are {persist: true, notify: true}
+	add(title, id, completed, options) {  // options are {during_load: t/f}
 		let todo = new TodoItem(title, id, completed);
 		this.todos.push(todo);
 
 		new ControllerTodoItem(todo, this)
-		if (options.notify) {
+		if (!options.during_load) {
 			todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 			notify_all("app model changed", this)  // will tell e.g. footer controller to update displayed count
-		}
-		if (options.persist)
 			this.save()
-
+		}
 		return todo
 	}
 
@@ -114,11 +112,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 
 	load() {
 		let todos_array = util.store('todos-oo')
-		let options = {persist: false, notify: false}
+		let options = {during_load: true}
 		todos_array.forEach(function (todo) {
 			this.add(todo.title, todo.id, todo.completed, options)
 		}, this)
-		notify_all("modified todoitem", this, {during_load: true})
+		notify_all("modified todoitem", this, options)
 		notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
 	}
 
@@ -304,7 +302,7 @@ class ControllerHeader {  // handles adding new items and toggling all as comple
 
 		$input.val('');
 
-		this.app.add(val, util.uuid(), false, {persist: true, notify: true})  // title, id, completed
+		this.app.add(val, util.uuid(), false, {during_load: false})  // title, id, completed
 	}
 
 	toggleAll(e) {
