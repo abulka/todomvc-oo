@@ -155,17 +155,15 @@ class ControllerTodoItem {
 		this.app = app
 		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
-		this.notify_func = undefined  // will be replaced by exact address of the this.notify function after it goes through .bind() mangling
+		this.notify_func = this.notify.bind(this)  // remember exact signature of func after it goes through .bind() mangling - so that we can later remove listener
 
 		// Gui events
 		// see bind_events() below, gui el gets re-bound after each gui el rebuild, which happens after each modified event notification
 
 		// Internal events
-		this.notify_func = this.notify.bind(this)  // remember exact signature of func so that we can later remove listener
 		document.addEventListener("modified todoitem", this.notify_func)  // event will come from todo model
 		document.addEventListener("deleted todoitem", this.notify_func)  // event will come from todo model
 		document.addEventListener("filter changed", this.notify_func)  // event will come from footer controller
-
 	}
 
 	bind_events($gui_li) {
