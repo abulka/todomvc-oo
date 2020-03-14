@@ -70,7 +70,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 			{ $toggle_checkbox: $('input[name="debug"]'), 
 			  pre_output: document.querySelector('pre.debug') }
 		)
-		new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
+		new ControllerHeader(
+			this, 
+			{ $input: $('.new-todo'),
+			  $toggle_all: $('.toggle-all') }
+		)
 		new ControllerFooter(this, 'footer')  // gui is footer el
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
@@ -285,20 +289,20 @@ class ControllerTodoItem {
 
 
 class ControllerHeader {  // handles adding new items and toggling all as completed/not completed
-	constructor(app, id) {
+	constructor(app, gui_dict) {
 		this.app = app
-		this.gui_input = id  // not used cos can derive gui from $(e.target)
+		this.gui = gui_dict  // some not used cos can derive gui from $(e.target)
 
 		// Gui events -> this controller
-		$('.new-todo').on('keyup', (event) => { this.on_keyup(event) })
-		$('.toggle-all').on('change', this.toggleAll.bind(this))
+		this.gui.$input.on('keyup', (event) => { this.on_keyup(event) })
+		this.gui.$toggle_all.on('change', this.toggleAll.bind(this))
 
 		// No internal events, thus no notify() method needed in this class
 	}
 
 	on_keyup(e) {
-		// this.welcome_model.message = $(e.target).val() 
 		var $input = $(e.target);
+		console.assert($input.get(0) == this.gui.$input.get(0))
 		var val = $input.val().trim();
 
 		if (e.which !== ENTER_KEY || !val)
@@ -377,9 +381,9 @@ class ControllerFooter {  // handles filters, reporting number of items
 
 
 class ControllerDebugDumpModels {
-	constructor(app, gui) {
+	constructor(app, gui_dict) {
 		this.app = app
-		this.gui = gui  // dict
+		this.gui = gui_dict
 
 		// Gui events
 		this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
