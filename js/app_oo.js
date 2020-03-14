@@ -116,7 +116,7 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		todos_array.forEach(function (todo) {
 			this.add(todo.title, todo.id, todo.completed, options)
 		}, this)
-		notify_all("modified todoitem", this, options)
+		notify_all("modified todoitem", this, options)  // all todo item controllers listen for and will receive this
 		notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
 	}
 
@@ -153,7 +153,7 @@ class ControllerTodoItem {
 		this.notify_func = this.notify.bind(this)  // remember exact signature of func after it goes through .bind() mangling - so that we can later remove listener
 
 		// Gui events
-		// see bind_events() below, gui el gets re-bound after each gui el rebuild, which happens after each modified event notification
+		// see bind_events() below
 
 		// Internal events
 		document.addEventListener("modified todoitem", this.notify_func)  // event will come from todo model
@@ -162,6 +162,7 @@ class ControllerTodoItem {
 	}
 
 	bind_events($gui_li) {
+		// li element needs to be re-bound every time it is rebuilt/rendered, which happens after each "modified todoitem" event notification
 		($gui_li)
 			.on('change', '.toggle', this.toggle.bind(this))
 			.on('dblclick', 'label', this.editingMode.bind(this))
@@ -181,7 +182,6 @@ class ControllerTodoItem {
 		$input.val(this.model_ref.title)  // sets the correct initial value
 		$input.focus();
 	}
-
 
 	editKeyup(e) {
 		if (e.which === ENTER_KEY) {
