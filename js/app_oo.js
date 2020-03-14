@@ -51,7 +51,7 @@ class TodoItem {
 	}
 
 	dirty() {
-		notify_all("modified todoitem", this)
+		notify_all("modified todoitem", this, {during_load: false})
 	}
 }
 
@@ -118,8 +118,8 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		todos_array.forEach(function (todo) {
 			this.add(todo.title, todo.id, todo.completed, options)
 		}, this)
-		this.dirty_all()
-		notify_all("app model changed", this)  // no listeners, but debug listener should kick in displaying the model
+		notify_all("modified todoitem", this, {during_load: true})
+		notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
 	}
 
 	destroyCompleted() {
@@ -140,9 +140,6 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		});
 	}
 
-	dirty_all() {
-		notify_all("modified todoitem", this)
-	}
 }
 
 //
@@ -243,6 +240,13 @@ class ControllerTodoItem {
 		return $(`li[data-id=${this.gui_id}]`)
 	}
 
+	build() {
+		let li = this.todoTemplate(this.model_ref.as_dict);
+		let $res = this._insert_gui(li);
+		this.bind_events($res);
+		this.apply_filter(this.app.filter);
+	}
+
 	apply_filter(filter) {
 		let $el = $(`li[data-id=${this.gui_id}]`)
 		if (filter == 'all')
@@ -262,16 +266,13 @@ class ControllerTodoItem {
 			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
 			this.apply_filter(event.detail.data.filter)
 		}
-		else if (event.type == "modified todoitem" && (this.model_ref.id == event.detail.from.id || event.detail.from.todos != undefined)) {
-			console.log(`\tcontroller for '${this.model_ref.title}' got notified of modification, updating gui`)
-			let li = this.todoTemplate(this.model_ref.as_dict)
-			let $res = this._insert_gui(li)
-			this.bind_events($res)
-			this.apply_filter(this.app.filter)
-			if (this.model_ref.id == event.detail.from.id)  // persist if modification event comes from todo item, not app load
+		else if (event.type == "modified todoitem" && (this.model_ref.id == event.detail.from.id || event.detail.data.during_load)) {
+			console.log(`\tcontroller for '${this.model_ref.title}' got notified of modification, updating gui ${event.detail.data.during_load ? '(during_load)' : ''}`)
+			this.build();
+			if (!event.detail.data.during_load)  // persist if modification event comes from todo item, not during initial app load creation of all items
 				this.app.save()
 		}
-		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
+		else if (this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
 			this._delete_gui()
 		}
