@@ -1,4 +1,4 @@
-// Includes app_oo.js for the controllers and 
+// Index.html includes app_model.js and app_controllers.js so they are available here
 
 (function (window) {
 	'use strict';
