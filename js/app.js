@@ -7,10 +7,10 @@
 
 	class App {  // knows everything, owns the list of todo models, creates all controllers, with some business logic
 		constructor() {
-			this.todos = []
-			this.filter = 'all'  // options are: all, active, completed
+			this.todos = []  // model
+			this.filter = 'all'  // view model, options are: 'all', 'active', 'completed'
 
-			// Create the permanent controllers - todo controllers are added as needed
+			// Create the permanent controllers - todo item controllers are added as needed
 			new ControllerDebugDumpModels(
 				this, 
 				{ $toggle_checkbox: $('input[name="debug"]'), 
@@ -59,7 +59,8 @@
 			this.save()
 		}
 
-		_convert_to_array_of_dicts() {
+		as_array() {
+			// convert to an array of todo item dicts
 			let result = []
 			this.todos.forEach(function (todo) {
 				result.push(todo.as_dict)
@@ -68,8 +69,7 @@
 		}
 
 		save() {
-			let todos = this._convert_to_array_of_dicts()
-			util.store('todos-oo', todos);
+			util.store('todos-oo', this.as_array())
 		}
 
 		load() {
