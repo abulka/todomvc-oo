@@ -65,7 +65,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		this.filter = 'all'  // options are: all, active, completed
 
 		// Create the permanent controllers - todo controllers are added as needed
-		new ControllerDebugDumpModels(this, 'pre.debug')
+		new ControllerDebugDumpModels(
+			this, 
+			{ $toggle_checkbox: $('input[name="debug"]'), 
+			  pre_output: document.querySelector('pre.debug') }
+		)
 		new ControllerHeader(this, '.new-todo')  // gui is the input el with this class
 		new ControllerFooter(this, 'footer')  // gui is footer el
 
@@ -375,10 +379,10 @@ class ControllerFooter {  // handles filters, reporting number of items
 class ControllerDebugDumpModels {
 	constructor(app, gui) {
 		this.app = app
-		this.gui = gui
+		this.gui = gui  // dict
 
 		// Gui events
-		$('input[name="debug"]').on('change', (event) => { this.display_debug_info(event) })
+		this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
 
 		// Internal events
 		document.addEventListener("notify all called", (event) => { this.notify(event) })
@@ -389,11 +393,11 @@ class ControllerDebugDumpModels {
 	}
 	
 	log(...txt) {
-		document.querySelector(this.gui).textContent = `${txt.join("\n")}\n`
+		this.gui.pre_output.textContent = `${txt.join("\n")}\n`
 	}
 
 	display_debug_info(event) {
-		document.querySelector(this.gui).style.display = event.target.checked ? 'block' : 'none'
+		this.gui.pre_output.style.display = event.target.checked ? 'block' : 'none'
 	}
 
 	notify(event) {
