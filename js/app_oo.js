@@ -74,15 +74,16 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		this.load()
 	}
 
-	add(title, id, completed, suppress_save) {
+	add(title, id, completed, options) {  // options are {persist: true, notify: true}
 		let todo = new TodoItem(title, id, completed);
 		this.todos.push(todo);
 
-		new ControllerTodoItem(todo, this)  // controller knows about app
-		todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
-
-		notify_all("app model changed", this)
-		if (suppress_save == undefined)
+		new ControllerTodoItem(todo, this)
+		if (options.notify) {
+			todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
+			notify_all("app model changed", this)  // will tell e.g. footer controller to update displayed count
+		}
+		if (options.persist)
 			this.save()
 
 		return todo
@@ -99,7 +100,6 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 	}
 
 	_convert_to_array_of_dicts() {
-		// this.todos
 		let result = []
 		this.todos.forEach(function (todo) {
 			result.push(todo.as_dict)
@@ -109,16 +109,16 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 
 	save() {
 		let todos = this._convert_to_array_of_dicts()
-		console.log('PERSISTENCE SAVE', todos)
 		util.store('todos-oo', todos);
 	}
 
 	load() {
 		let todos_array = util.store('todos-oo')
-		console.log('PERSISTENCE LOAD', todos_array)
+		let options = {persist: false, notify: false}
 		todos_array.forEach(function (todo) {
-			this.add(todo.title, todo.id, todo.completed, true)  // true means suppress_save
+			this.add(todo.title, todo.id, todo.completed, options)
 		}, this)
+		this.dirty_all()
 		notify_all("app model changed", this)  // no listeners, but debug listener should kick in displaying the model
 	}
 
@@ -262,13 +262,14 @@ class ControllerTodoItem {
 			console.log(`\tcontroller for '${this.model_ref.title}' got notified of filter change to '${event.detail.data.filter}', applying necessary visibility`)
 			this.apply_filter(event.detail.data.filter)
 		}
-		else if (event.type == "modified todoitem" && this.model_ref.id == event.detail.from.id) {
+		else if (event.type == "modified todoitem" && (this.model_ref.id == event.detail.from.id || event.detail.from.todos != undefined)) {
 			console.log(`\tcontroller for '${this.model_ref.title}' got notified of modification, updating gui`)
 			let li = this.todoTemplate(this.model_ref.as_dict)
 			let $res = this._insert_gui(li)
 			this.bind_events($res)
 			this.apply_filter(this.app.filter)
-			this.app.save()
+			if (this.model_ref.id == event.detail.from.id)  // persist if modification event comes from todo item, not app load
+				this.app.save()
 		}
 		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
@@ -302,7 +303,7 @@ class ControllerHeader {  // handles adding new items and toggling all as comple
 
 		$input.val('');
 
-		this.app.add(val, util.uuid(), false)  // title, id, completed
+		this.app.add(val, util.uuid(), false, {persist: true, notify: true})  // title, id, completed
 	}
 
 	toggleAll(e) {
