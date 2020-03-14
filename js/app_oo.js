@@ -75,7 +75,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 			{ $input: $('.new-todo'),
 			  $toggle_all: $('.toggle-all') }
 		)
-		new ControllerFooter(this, 'footer')  // gui is footer el
+		new ControllerFooter(
+			this, 
+			{ $footer: $('footer'),
+		      $footer_interactive_area: $('.footer')}
+		)
 
 		document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
 
@@ -324,14 +328,14 @@ class ControllerHeader {  // handles adding new items and toggling all as comple
 
 
 class ControllerFooter {  // handles filters, reporting number of items
-	constructor(app, footer_selector) {
+	constructor(app, gui_dict) {
 	  	this.app = app
-		this.gui_footer_selector = footer_selector
+		this.gui = gui_dict
 		this.footerTemplate = Handlebars.compile($('#footer-template').html());
 		  
 		// Gui events
-		$(this.gui_footer_selector).on('click', '.clear-completed', this.destroyCompleted.bind(this))
-		$(this.gui_footer_selector).on('click', 'ul', this.filter_click.bind(this))
+		this.gui.$footer.on('click', '.clear-completed', this.destroyCompleted.bind(this))
+		this.gui.$footer.on('click', 'ul', this.filter_click.bind(this))
 
 		// Internal events
 		document.addEventListener("app model changed", (event) => { this.notify(event) })
@@ -369,7 +373,7 @@ class ControllerFooter {  // handles filters, reporting number of items
 			filter: this.filter
 		});
 
-		$('.footer').toggle(todoCount > 0).html(template);
+		this.gui.$footer_interactive_area.toggle(todoCount > 0).html(template);
 	}
 
 	notify(event) {
