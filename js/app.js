@@ -5,8 +5,9 @@
 
 	// Your starting point. Enjoy the ride!
 
-	class App {  // knows everything, owns the list of todo models, creates all controllers, with some business logic
+	class App extends Subject {  // knows everything, owns the list of todo models, creates all controllers, with some business logic
 		constructor() {
+			super()
 			this.todos = []  // model
 			this.filter = 'all'  // view model, options are: 'all', 'active', 'completed'
 
@@ -43,7 +44,7 @@
 			)
 			if (!options.during_load) {
 				todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
-				notify_all("app model changed", this)  // will tell e.g. footer controller to update displayed count
+				this.notify_all("app model changed", this)  // will tell e.g. footer controller to update displayed count
 				this.save()
 			}
 			return todo
@@ -55,7 +56,7 @@
 			const indx = this.todos.findIndex(v => v == todo_item);
 			this.todos.splice(indx, indx >= 0 ? 1 : 0);
 
-			notify_all("app model changed", this)
+			this.notify_all("app model changed", this)
 			this.save()
 		}
 
@@ -78,8 +79,8 @@
 			todos_array.forEach(function (todo) {
 				this.add(todo.title, todo.id, todo.completed, options)
 			}, this)
-			notify_all("modified todoitem", this, options)  // all todo item controllers listen for and will receive this
-			notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
+			this.notify_all("modified todoitem", this, options)  // all todo item controllers listen for and will receive this
+			this.notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
 		}
 
 		destroyCompleted() {

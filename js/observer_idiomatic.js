@@ -1,13 +1,3 @@
-class Subject {
-   notify_all(event_name, from, data) {
-    console.log(`notify all of event '${event_name}' ${from != null ? 'from: ' + from.constructor.name : 'from unspecified'} ${data != null ? 'data: ' + data : ''}`)
-    document.dispatchEvent(new CustomEvent(event_name, { detail: {from: from, data: data } }))
-  
-    // debugging hook
-    document.dispatchEvent(new CustomEvent("notify all called", { detail: {event_name: event_name, target: from, data: data } }))
-  }
-}
-
 /**
  * Idiomatic Javascript eventing to implement Subject/Observer pattern
  * 
@@ -42,10 +32,10 @@ class Subject {
  * @param {object} from typically who is doing the notification, caller passes this in explicitly [optional]
  * @param {object or dictionary} data arbitrary info [optional]
  */
-// function notify_all(event_name, from, data) {
-//     console.log(`notify all of event '${event_name}' ${from != null ? 'from: ' + from.constructor.name : 'from unspecified'} ${data != null ? 'data: ' + data : ''}`)
-//     document.dispatchEvent(new CustomEvent(event_name, { detail: {from: from, data: data } }))
+function notify_all(event_name, from, data) {
+    console.log(`notify all of event '${event_name}' ${from != null ? 'from: ' + from.constructor.name : 'from unspecified'} ${data != null ? 'data: ' + data : ''}`)
+    document.dispatchEvent(new CustomEvent(event_name, { detail: {from: from, data: data } }))
   
-//     // debugging hook
-//     document.dispatchEvent(new CustomEvent("notify all called", { detail: {event_name: event_name, target: from, data: data } }))
-//   }
+    // debugging hook
+    document.dispatchEvent(new CustomEvent("notify all called", { detail: {event_name: event_name, target: from, data: data } }))
+  }

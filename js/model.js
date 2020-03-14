@@ -2,8 +2,9 @@
 // Model
 //
 
-class TodoItem {
+class TodoItem extends Subject {
 	constructor(title, id, completed) {
+		super()
 		this._title = title == undefined ? "" : title;
 		this._completed = completed == undefined ? false : completed;
 		this.id = id == undefined ? util.uuid() : id;  // no getter/setter needed
@@ -36,10 +37,10 @@ class TodoItem {
 	}
 
 	delete() {
-		notify_all("deleted todoitem", this)
+		this.notify_all("deleted todoitem", this)
 	}
 
 	dirty() {
-		notify_all("modified todoitem", this, {during_load: false})
+		this.notify_all("modified todoitem", this, {during_load: false})
 	}
 }
