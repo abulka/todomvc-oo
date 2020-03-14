@@ -90,7 +90,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 		let todo = new TodoItem(title, id, completed);
 		this.todos.push(todo);
 
-		new ControllerTodoItem(todo, this)
+		new ControllerTodoItem(
+			this, 
+			todo, 
+			{ $todolist: $('ul.todo-list') }
+		)
 		if (!options.during_load) {
 			todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 			notify_all("app model changed", this)  // will tell e.g. footer controller to update displayed count
@@ -157,9 +161,11 @@ class App {  // knows everything, owns the list of todo models, creates all cont
 //
 
 class ControllerTodoItem {
-	constructor(model_ref, app) {
-		this.model_ref = model_ref
+	constructor(app, model_ref, gui_dict) {
 		this.app = app
+		this.model_ref = model_ref
+		this.gui = gui_dict
+
 		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
 		this.todoTemplate = Handlebars.compile($('#todo-template').html());
 		this.notify_func = this.notify.bind(this)  // remember exact signature of func after it goes through .bind() mangling - so that we can later remove listener
@@ -243,10 +249,10 @@ class ControllerTodoItem {
 		let $existing_li = $(`li[data-id=${this.gui_id}]`)
 		if ($existing_li.length == 1)
 			$existing_li.replaceWith(li)  // replace existing li
-		else if ($('ul.todo-list li').last().length == 0)
-			$('ul.todo-list').append($(li))  // create initial li
+		else if (this.gui.$todolist.find('li').length == 0)
+			this.gui.$todolist.append($(li))  // create initial li
 		else
-			$(li).insertAfter($('ul.todo-list li').last())  // append after last li
+			$(li).insertAfter(this.gui.$todolist.find('li').last())  // append after last li
 		return $(`li[data-id=${this.gui_id}]`)
 	}
 
