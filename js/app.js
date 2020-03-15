@@ -10,6 +10,7 @@
 			super()
 			this.todos = []  // model
 			this.filter = 'all'  // view model, options are: 'all', 'active', 'completed'
+			this.footer_controller  // unfortunately with the observer pattern we need this
 
 			// Create the permanent controllers - todo item controllers are added as needed
 			new ControllerDebugDumpModels(
@@ -22,31 +23,36 @@
 				{ $input: $('.new-todo'),
 				$toggle_all: $('.toggle-all') }
 			)
-			new ControllerFooter(
+			this.footer_controller = new ControllerFooter(
 				this, 
 				{ $footer: $('footer'),
 				$footer_interactive_area: $('.footer')}
 			)
 
-			document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
+			// document.addEventListener("deleted todoitem", (event) => { this.delete(event.detail.from) })
+			// rather than to an event type here, subscribe to each todo object within .add() below
 
 			this.load()
+			this.notify_all("app model changed", this)  // NEW for observer pattern
 		}
 
 		add(title, id, completed, options) {  // options are {during_load: t/f}
 			let todo = new TodoItem(title, id, completed);
 			this.todos.push(todo);
-
 			new ControllerTodoItem(
 				this, 
 				todo, 
-				{ $todolist: $('ul.todo-list') }
+				{ $todolist: $('ul.todo-list') },
+				this.footer_controller
 			)
 			if (!options.during_load) {
 				todo.dirty()  // will cause broadcast, to its controller, which will create gui elements as necessary
 				this.notify_all("app model changed", this)  // will tell e.g. footer controller to update displayed count
 				this.save()
 			}
+			todo.add_observer(this, "deleted todoitem")
+			todo.add_observer(this.footer_controller, "modified todoitem")  // NEW for observer pattern
+
 			return todo
 		}
 
@@ -79,8 +85,14 @@
 			todos_array.forEach(function (todo) {
 				this.add(todo.title, todo.id, todo.completed, options)
 			}, this)
-			this.notify_all("modified todoitem", this, options)  // all todo item controllers listen for and will receive this
-			this.notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
+			// EVENTING SOLUTION
+			// this.notify_all("modified todoitem", this, options)  // all todo item controllers listen for and will receive this
+			// this.notify_all("app model changed", this)  // no listeners except root debug listener, displaying the model debug view
+			// OBSERVER SOLUTION
+			this.todos.forEach(function (todo) {
+				todo.notify_all("modified todoitem", todo, options)
+			}, this)
+
 		}
 
 		destroyCompleted() {
@@ -101,6 +113,12 @@
 			});
 		}
 
+		notify(event, from, data) {
+			if (event.type == "deleted todoitem")
+				this.delete(from)
+			else
+				console.warn(`unhandled notification '${event.type}'`)
+		}
 	}
 
 	let app = new App()

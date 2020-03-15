@@ -14,7 +14,7 @@ var ESCAPE_KEY = 27;
 //
 
 class ControllerTodoItem {
-	constructor(app, model_ref, gui_dict) {
+	constructor(app, model_ref, gui_dict, footer_controller) {
 		this.app = app
 		this.model_ref = model_ref
 		this.gui = gui_dict
@@ -27,9 +27,12 @@ class ControllerTodoItem {
 		// see bind_events() below
 
 		// Internal events
-		document.addEventListener("modified todoitem", this.notify_func)  // event will come from todo model
-		document.addEventListener("deleted todoitem", this.notify_func)  // event will come from todo model
-		document.addEventListener("filter changed", this.notify_func)  // event will come from footer controller
+		model_ref.add_observer(this, "modified todoitem")
+		model_ref.add_observer(this, "deleted todoitem")
+		footer_controller.add_observer(this, "filter changed")
+		// document.addEventListener("modified todoitem", this.notify_func)  // event will come from todo model
+		// document.addEventListener("deleted todoitem", this.notify_func)  // event will come from todo model
+		// document.addEventListener("filter changed", this.notify_func)  // event will come from footer controller
 	}
 
 	bind_events($gui_li) {
@@ -92,9 +95,9 @@ class ControllerTodoItem {
 		this.gui_id = "gone"  // protect against using this controller again
 
 		// stop referencing this todo item controller by removing any document listeners to this controller's notify_func
-		document.removeEventListener("modified todoitem", this.notify_func, false)
-		document.removeEventListener("deleted todoitem", this.notify_func, false)
-		document.removeEventListener("filter changed", this.notify_func, false)
+		// document.removeEventListener("modified todoitem", this.notify_func, false)
+		// document.removeEventListener("deleted todoitem", this.notify_func, false)
+		// document.removeEventListener("filter changed", this.notify_func, false)
 	}
 
 	_insert_gui(li) {
@@ -128,6 +131,10 @@ class ControllerTodoItem {
 			$el.show()
 	}
 
+	// TODO perhaps I should follow the idea of an event being an object not a string, and thus having a .detail
+	// and .data - which would make them more compatible with the pure eventing version?
+	
+	// notify(event, from, data) {
 	notify(event) {
 		console.assert(this.gui_id != 'gone', 'old controller being notified?')
 
@@ -145,6 +152,8 @@ class ControllerTodoItem {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
 			this._delete_gui()
 		}
+		else
+			console.warn(`unhandled notification '${event.type}'`)
 
 	}
 
@@ -186,8 +195,9 @@ class ControllerHeader {  // handles adding new items and toggling all as comple
 }
 
 
-class ControllerFooter {  // handles filters, reporting number of items
+class ControllerFooter extends Subject {  // handles filters, reporting number of items
 	constructor(app, gui_dict) {
+		super()
 	  	this.app = app
 		this.gui = gui_dict
 		this.footerTemplate = Handlebars.compile($('#footer-template').html());
@@ -197,8 +207,12 @@ class ControllerFooter {  // handles filters, reporting number of items
 		this.gui.$footer.on('click', 'ul', this.filter_click.bind(this))
 
 		// Internal events
-		document.addEventListener("app model changed", (event) => { this.notify(event) })
-		document.addEventListener("modified todoitem", (event) => { this.notify(event) })
+		app.add_observer(this, "app model changed")
+		// app.add_observer(this, "modified todoitem") BROKEN IDEA cos app not notifying this event - 
+						// its one thing to subscribe, but the subject must play ball and do the notification.
+						// so instead app will subscribe us to each item
+		// document.addEventListener("app model changed", (event) => { this.notify(event) })
+		// document.addEventListener("modified todoitem", (event) => { this.notify(event) })
 	}
 
 	destroyCompleted(e) {
@@ -211,7 +225,18 @@ class ControllerFooter {  // handles filters, reporting number of items
 		this.renderFooter()
 
 		// this broadcast goes to all the todoitem controllers
-		notify_all("filter changed", this, {'filter': this.filter});		
+		// EVENTING SOLUTION 
+		// notify_all("filter changed", this, {'filter': this.filter});
+		// OBSERVER SOLUTION?
+		/*
+			currently 
+			need to loop through all todo's - either:
+				- each todo item model becomes observer of footer? - yuk
+				- app becomes observer of footer - then it loops through all the todos telling them they are dirty
+				- each todo item controller becomes observer of footer - BUT NEED OBJ REF SOMEHOW
+		*/
+		this.notify_all("filter changed", this, {'filter': this.filter});
+
 	}
 
 	get filter() {
@@ -252,7 +277,8 @@ class ControllerDebugDumpModels {
 		this.gui.$toggle_checkbox.on('change', (event) => { this.display_debug_info(event) })
 
 		// Internal events
-		document.addEventListener("notify all called", (event) => { this.notify(event) })
+		// document.addEventListener("notify all called", (event) => { this.notify(event) })
+		// TODO - how to hook into all internal event traffic with observer pattern approach?
 	}
 
 	format(obj) {
