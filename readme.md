@@ -1,12 +1,16 @@
 # MVC-A • [TodoMVC](http://todomvc.com)
 
-> MVC-A Architecture - Object Oriented MVC plus App Architecture
+The TodoMVC app implemented using Object Oriented programming incl. MVC controllers objects.
 
-This is merely my (Andy Bulka's) own "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.atug.com/andypatterns/mgm.htm) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. They mediate between the GUI and the model/app. 
+![](https://github.com/tastejs/todomvc-app-css/raw/master/screenshot.png)
 
-The role of the App - this is important and often overlooked. Whilst it is fine to wire Controllers directly to model instances, you will also need to create a more centralised class - the "App" to hold business logic which manipulates the model. The App can also hold "view state" like the state of the "filter" in this Todo application.
+This implementation goes a little further and proposes a "MVC-A Architecture" - Object Oriented MVC plus App Architecture.
 
-This MVC-A architectural design pattern clearly defines:
+This is a "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.atug.com/andypatterns/mgm.htm) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. They mediate between the GUI and the model/app. 
+
+The role of the App - this is important and often overlooked. Whilst it is fine to wire Controllers directly to model instances, you will e App can also hold "view state" like the state of the "filter" in this Todo application.
+also need to create a more centralised class - the "App" to hold business logic which manipulates the model. Th
+The MVC-A architectural design pattern clearly defines:
 
 * the role mediating Controllers play
 * the need for an App object
