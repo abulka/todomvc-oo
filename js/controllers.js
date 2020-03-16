@@ -141,7 +141,7 @@ class ControllerTodoItem {
 			if (!event.detail.data.during_load)  // persist if modification event comes from todo item, not during initial app load creation of all items
 				this.app.save()
 		}
-		else if (this.model_ref.id == event.detail.from.id) {
+		else if (event.type == "deleted todoitem" && this.model_ref.id == event.detail.from.id) {
 			console.log(`\tcontroller for ${this.model_ref.title} got notified of deletion, unwiring`)
 			this._delete_gui()
 		}
