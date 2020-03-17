@@ -12,7 +12,12 @@ The role of the App is also important and often overlooked/undocumented. Whilst 
 
 ## MVC-A architectural design pattern
 
-This implementation uses my "MVC-A Architecture" - "MVC plus App" Architecture.  Its basically MVC except it adds critical information about the App object.
+This implementation uses my "MVC-A architecture" which means "MVC" plus "App" - the "-A" stands for "App".  Its basically MVC except it adds critical information about the App object.  Model, View, Controller and App.
+
+* Model - domain objects, persisted, some business logic
+* View - GUI e.g. Html DOM input controls, checkboxes etc.
+* Controller - renders model and app info into the gui, recevies gui events
+* App - owns the model, builds controllers, ties it all together (see below)
 
 The MVC-A architectural design pattern clearly defines:
 
@@ -33,7 +38,7 @@ A dedicated page on the MVC-A architectural design pattern [here](#).
 
 ## Is this officially part of the TodoMVC project?
 
-This project is a Javascript implementation, and not not officially part of the famous [TodoMVC project](http://todomvc.com/) - as it is not a trendy framework, nor does it meet the criterion of "having a community" around it.  Perhaps it is old Skool OO, thus arguably historically more popular than any of the latest frameworks? :-)
+This project is a Javascript implementation, and not not officially part of the famous [TodoMVC project](http://todomvc.com/) - as it is not a trendy framework, nor does it meet the criterion of "having a community" around it.  On the other hand, perhaps "Old Skool" OO is arguably historically more popular than any of the latest frameworks? 😉
 
 ## Resources
 
