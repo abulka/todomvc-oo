@@ -3,25 +3,34 @@ DEST=~/Devel/abulka.github.io/todomvc-oo
 cp -v index.html \
 $DEST
 
+DIR=js
 cp -v js/app.js js/controllers.js js/model.js \
 js/observer_events.js js/util.js \
-index.html \
-$DEST/js
+$DEST/$DIR
 
-mkdir -p $DEST/node_modules/todomvc-common && \
-cp -v node_modules/todomvc-common/base.css $_
+DIR=node_modules/todomvc-common
+mkdir -p $DEST/$DIR && \
+cp -v $DIR/base.css $_
 
-mkdir -p $DEST/node_modules/todomvc-app-css && \
-cp -v node_modules/todomvc-app-css/index.css $_
+DIR=node_modules/todomvc-app-css
+mkdir -p $DEST/$DIR && \
+cp -v $DIR/index.css $_
 
-mkdir -p $DEST/node_modules/todomvc-common && \
-cp -v node_modules/todomvc-common/base.js $_
+DIR=node_modules/todomvc-common
+mkdir -p $DEST/$DIR && \
+cp -v $DIR/base.js $_
 
-mkdir -p $DEST/node_modules/jquery/dist && \
-cp -v node_modules/jquery/dist/jquery.js $_
+DIR=node_modules/jquery/dist
+mkdir -p $DEST/$DIR && \
+cp -v $DIR/jquery.js $_
 
-mkdir -p $DEST/node_modules/handlebars/dist && \
-cp node_modules/handlebars/dist/handlebars.js $_
+# DIR=node_modules/jquery/dist
+# mkdir -p $DEST/$DIR && \
+# cp -v $DIR/jquery.min.map $_
+
+DIR=node_modules/handlebars/dist
+mkdir -p $DEST/$DIR && \
+cp -v $DIR/handlebars.js $_
 
 echo
 echo "Now cd into $DEST, git commit, git push 
