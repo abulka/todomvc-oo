@@ -1,15 +1,19 @@
-# MVC-A • [TodoMVC](http://todomvc.com)
+# Object Oriented Controller • [TodoMVC](http://todomvc.com)
 
-The TodoMVC app implemented using Object Oriented programming incl. MVC controller objects.
+The TodoMVC app implemented without a framework - using Object Oriented programming incl. distinct MVC controller objects.
 
 ![](https://github.com/tastejs/todomvc-app-css/raw/master/screenshot.png)
 
-This implementation goes a little further and proposes a "MVC-A Architecture" - Object Oriented MVC plus App Architecture.
+Running demo [here](https://abulka.github.io/todomvc-oo/index.html)
 
-This is a "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.andypatterns.com/index.php/design_patterns/model_gui_mediator_pattern/) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. They mediate between the GUI and the model/app. 
+This is a "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.andypatterns.com/index.php/design_patterns/model_gui_mediator_pattern/) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. Controllers mediate between the GUI and the model/app. 
 
-The role of the App - this is important and often overlooked. Whilst it is fine to wire Controllers directly to model instances, you will e App can also hold "view state" like the state of the "filter" in this Todo application.
-also need to create a more centralised class - the "App" to hold business logic which manipulates the model. Th
+The role of the App is also important and often overlooked/undocumented. Whilst it is fine to wire Controllers directly to model instances, you will also need an App to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The App is a centralised class, a kind of hub - to hold business logic to manipulates the model. More details below:
+
+## MVC-A architectural design pattern
+
+This implementation uses my "MVC-A Architecture" - "MVC plus App" Architecture.  Its basically MVC except it adds critical information about the App object.
+
 The MVC-A architectural design pattern clearly defines:
 
 * the role mediating Controllers play
@@ -23,7 +27,13 @@ The App object is central to this architecture:
 * holds view state
 * contains some business logic methods
 
-This project is a Javascript implementation, and not not officially part of the [TodoMVC project](http://todomvc.com/) - as it is not a framework, nor does it meet the criterion of "having a community" around it.  
+Eventing is also an important consideration in decoupling models from controllers, and to facilitate abstract communication between objects. We use eventing (event name -> function) rather than the traditional observer pattern (object -> object method).
+
+A dedicated page on the MVC-A architectural design pattern [here](#).
+
+## Is this officially part of the TodoMVC project?
+
+This project is a Javascript implementation, and not not officially part of the famous [TodoMVC project](http://todomvc.com/) - as it is not a trendy framework, nor does it meet the criterion of "having a community" around it.  Perhaps it is old Skool OO, thus arguably historically more popular than any of the latest frameworks? :-)
 
 ## Resources
 
