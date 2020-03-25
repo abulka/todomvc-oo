@@ -8,6 +8,10 @@ cp -v js/app.js js/controllers.js js/model.js \
 js/observer_events.js js/util.js \
 $DEST/$DIR
 
+DIR=css
+mkdir -p $DEST/$DIR && \
+cp -v $DIR/app.css $_
+
 DIR=node_modules/todomvc-common
 mkdir -p $DEST/$DIR && \
 cp -v $DIR/base.css $_
