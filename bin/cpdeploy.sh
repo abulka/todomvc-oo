@@ -1,7 +1,7 @@
-DEST=~/Devel/abulka.github.io/todomvc-oo
+# DEST=~/Devel/abulka.github.io/todomvc-oo
+DEST=docs
 
-cp -v index.html \
-$DEST
+cp -v index.html $DEST
 
 DIR=js
 cp -v js/app.js js/controllers.js js/model.js \
@@ -33,7 +33,7 @@ mkdir -p $DEST/$DIR && \
 cp -v $DIR/handlebars.js $_
 
 echo
-echo "Now cd into $DEST, git commit, git push 
+echo "Now git commit, git push 
 Then access with
 https://abulka.github.io/todomvc-oo/index.html 
 "
