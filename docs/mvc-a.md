@@ -56,6 +56,7 @@ This is my old MGM pattern which is very similar to what has been implemented in
 
 Its more understandable if you think of the 'mediator' as a mere 'controller'. 
 
+{% raw %}
 <iframe src="https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/pdf_as_html/andybulkamodelguimediatorpattern.html" name="frame1" scrolling="yes" frameborder="yes" align="center" height = "842px" width = "800">
 </iframe>
-
+{% endraw %}

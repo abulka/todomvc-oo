@@ -6,7 +6,7 @@ The classic TodoMVC app implemented in Javascript, but without a 'fancy framewor
 
 Running demo [here](https://abulka.github.io/todomvc-oo/index.html)  -  play with the actual app 
 
-Article on MVC-A [here](https://abulka.github.io/todomvc-oo/mvc-a.md)  ⬅️ this is a bit more abstract - generalising what this implementation discovered
+Article on MVC-A [here](https://abulka.github.io/todomvc-oo/mvc-a)  ⬅️ this is a bit more abstract - generalising what this implementation discovered
 
 ## TodoMVC-OO
 
