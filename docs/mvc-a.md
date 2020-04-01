@@ -72,10 +72,8 @@ responsive wrap attempt
 <!-- Google embed ends -->
 </div>
 
-<style>
-.responsive-wrap iframe{ max-width: 100%;}
-</style>
+
 <div class="responsive-wrap">
-<iframe src="https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/pdf_as_html/andybulkamodelguimediatorpattern.html" name="frame1" scrolling="yes" frameborder="yes" align="center" height = "842px" width = "800">
+<iframe src="https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/pdf_as_html/andybulkamodelguimediatorpattern.html" frameborder="0" width="960" height="842px" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true">
 </div>
 
