@@ -31,7 +31,9 @@ The App object is central to this architecture:
 
 Eventing is also an important consideration in decoupling models from controllers, and to facilitate abstract communication between objects. We use eventing (event name -> function) rather than the traditional observer pattern (object -> object method).
 
-## Diagrams]
+## Diagrams
+
+Here are some diagams.
 
 ## Overall Architecture
 
@@ -47,4 +49,13 @@ Ensure you are using Chrome.
 
 [![todomvc_events]({{page.url_events}})]({{page.url_events}})
 *(click on diagram for more detail and the ability to zoom)*
+
+### Old MGM Pattern
+
+This is my old MGM pattern which is very similar to what has been implemented in the article. Its a very old paper I wrote when I was young, and it tried to clarify what the 'view' was and the exact nature and role of the controller. Looking back on it, its a historical moment which later led to the TodoMVC-OO implementation here, and the MVC-A pattern.
+
+Its more understandable if you think of the 'mediator' as a mere 'controller'. 
+
+<iframe src="https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/pdf_as_html/andybulkamodelguimediatorpattern.html" name="frame1" scrolling="yes" frameborder="yes" align="center" height = "842px" width = "800">
+</iframe>
 
