@@ -1,6 +1,3 @@
----
-url_architecture_simple:       https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/MVC-A-MGM-Architecture.svg?sanitize=true
----
 # Object Oriented Controller • [TodoMVC](http://todomvc.com)
 
 The classic TodoMVC app implemented in Javascript, but without a 'fancy framework' - using Object Oriented programming incl. distinct MVC controller objects.
@@ -20,7 +17,7 @@ This is a "traditional" Object Oriented implementation using my knowledge of Obj
 The role of the App is also important and often overlooked/undocumented. Whilst it is fine to wire Controllers directly to model instances, you will also need an App to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The App is a centralised class, a kind of hub - to hold business logic to manipulates the model. More details below:
 
 
-![mvc-a-architecture]({{page.url_architecture_simple}})
+![mvc-a-architecture](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/MVC-A-MGM-Architecture.svg?sanitize=true)
 
 ## Background
 
@@ -53,7 +50,7 @@ I feel the challenge of GUI architectures is to tame the role of Controller into
 
 ## Architecture
 
-[![mvc-a-architecture]({{page.url_architecture}})]({{page.url_architecture}})
+![mvc-a-architecture](https://raw.githubusercontent.com/tcab/pagestest/master/docs/images/mvc-a-architecture.svg?sanitize=true)
 
 ## Resources
 
@@ -64,6 +61,15 @@ I feel the challenge of GUI architectures is to tame the role of Controller into
 - [FAQ](https://www.gituml.com/editz/136)
 
 Which is fully visible here.
+
+### Old MGM Pattern
+
+This is my old MGM pattern which is very similar to what has been implemented in the article. Its a very old paper I wrote when I was young, and it tried to clarify what the 'view' was and the exact nature and role of the controller. Looking back on it, its a historical moment which later led to the TodoMVC-OO implementation here, and the MVC-A pattern.
+
+Its more understandable if you think of the 'mediator' as a mere 'controller'. 
+
+<iframe src="https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/pdf_as_html/andybulkamodelguimediatorpattern.html" name="frame1" scrolling="yes" frameborder="yes" align="center" height = "842px" width = "800">
+</iframe>
 
 ### Is TodoMVC-OO officially part of the TodoMVC project?
 
