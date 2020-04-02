@@ -65,7 +65,7 @@ Background - what is MVC?
 Let's assume that the MVC (model-view-controller) architecture in the case of getting model data rendered onto a HTML page works like this:
 - Model - contains the data. Can be a object with methods, or just pure JSON data.
 - View - are the DOM elements that are visualised in HTML.
-- Controller - code which copies information from the model into the DOM. The controller also consists of any DOM event handler code that copies information back from the DOM and into the model again, as well code which manipulates the DOM / visualisation.
+- Controller - code which copies information from the app & model into the DOM. The controller also consists of any DOM event handler code that copies information back from the DOM and into the model again, as well code which manipulates the DOM / visualisation.
 
 I quite like another more colloquial description of MVC given in a [stackoverflow answer](https://stackoverflow.com/questions/2626803/mvc-model-view-controller-can-it-be-explained-in-simple-terms) by Javier:
 
@@ -76,15 +76,12 @@ I quite like another more colloquial description of MVC given in a [stackoverflo
 ## The Controller role
 The Controller isn't necessarily a single thing. A bunch of GUI event handler functions are part of the 'controller role'. Code that copies data from the model into the GUI/DOM is part of the Controller role.
 
-The Model (JSON or model) and View (DOM) are simple enough, its the Controller that is the most interesting aspect of MVC.
-
 > The Model (JSON or model) and View (DOM) are simple enough, its the Controller that is the most interesting aspect of MVC.
 
 I feel the challenge of GUI architectures is to tame the role of Controller into some semblance of coherance and symmetric organisation.
 
-Controller is a Mediator
-Mediates between (and has a reference to) 
-* model
+Controller is a Mediator. It mediates between (and has references to) the
+* model & app
 * view
 
 ![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvc-a-controller-pov/mvc-a-controller-pov.svg?sanitize=true)
