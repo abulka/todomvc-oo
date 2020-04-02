@@ -8,10 +8,17 @@ header
 (c) Andy Bulka 2020
 endheader
 
-package {
+package "App and Model" {
     class Model
-    class "View"
     class App
+}
+
+Package GUI {
+    class "View"
+}
+
+Package Controller #PaleVioletRed {
+    class "Controller"
 }
 
 class "Model"  << (M,#FF7700) >> {

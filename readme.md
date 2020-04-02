@@ -6,7 +6,35 @@ The classic TodoMVC app implemented in Javascript, but without a 'fancy framewor
 
 Running demo [here](https://abulka.github.io/todomvc-oo/index.html)  -  play with the actual app - **had to disable jekyl for node_modules etc. to upload properly**.
 
+## THE ARTICLE BELOW IS A WORK IN PROGRESS - DO NOT READ THIS YET!
+
+2nd April 2020
+
+It should be complete in a few more days.
+
+---
+
 ## MVC-App Architectural Pattern
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
 
 (Model View Controller - App)
 
