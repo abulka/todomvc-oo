@@ -4,15 +4,21 @@ The classic TodoMVC app implemented in Javascript, but without a 'fancy framewor
 
 ![](https://github.com/tastejs/todomvc-app-css/raw/master/screenshot.png)
 
-Running demo [here](https://abulka.github.io/todomvc-oo/index.html)  -  play with the actual app 
+Running demo [here](https://abulka.github.io/todomvc-oo/index.html)  -  play with the actual app - **had to disable jekyl for node_modules etc. to upload properly**.
 
-Article on MVC-A [here](https://abulka.github.io/todomvc-oo/mvc-a)  ⬅️ this is a bit more abstract - generalising what this implementation discovered
+## MVC-App Architectural Pattern
+
+(Model View Controller - App)
+
+Article on MVC-A  ⬅️ this is a bit more abstract - generalising what this implementation discovered
+- Article on MVC-A [here](https://abulka.github.io/todomvc-oo/mvc-a)
+- Article on MVC-A mvc-a-vers-root version [here](mvc-a-vers-root.md)
 
 ## TodoMVC-OO
 
 This section explains this project in detail !!  Might later publish this on Medium.
 
-This is a "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.andypatterns.com/index.php/design_patterns/model_gui_mediator_pattern/) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. Controllers mediate between the GUI and the model/app. 
+This is a "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.andypatterns.com/index.php/design_patterns/model_gui_mediator_pattern/) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. Controllers mediate between the GUI and the model/app. HTML for this old paper now available [here](https://abulka.github.io/todomvc-oo/pdf_as_html/andybulkamodelguimediatorpattern.html).
 
 The role of the App is also important and often overlooked/undocumented. Whilst it is fine to wire Controllers directly to model instances, you will also need an App to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The App is a centralised class, a kind of hub - to hold business logic to manipulates the model. More details below:
 
@@ -89,3 +95,6 @@ The only spec violation might be the flash of the footer comes too early rather 
 ## Credit
 
 Created by [Andy Bulka](http://andypatterns.com)
+
+<div class="github-card" data-github="abulka" data-width="400" data-height="" data-theme="medium"></div>
+<script src="//cdn.jsdelivr.net/github-cards/latest/widget.js"></script>
