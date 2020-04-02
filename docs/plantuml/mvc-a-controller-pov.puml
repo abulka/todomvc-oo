@@ -1,0 +1,70 @@
+
+@startuml mvc-a-controller-pov
+
+title Controller point of view
+
+header
+<font color=blue size=20>MVC-App Architecture</font>
+(c) Andy Bulka 2020
+endheader
+
+package {
+    class Model
+    class "View"
+    class App
+}
+
+class "Model"  << (M,#FF7700) >> {
+}
+
+class "Controller" << (C,#FF7700)>> {
+    model
+    view    <i>e.g. DOM reference</i>
+    notify()
+}
+
+class "View" << (V,#FF7700) >> {
+    buttons
+    text inputs
+    checkbox inputs
+    ---
+    <img:/Users/Andy/Devel/todomvc-oo/docs/images/mgm-pattern-gui.png>
+}
+
+class App  << (A,#FF7700) >> {
+    model reference
+}
+
+note as User #white
+    User
+    <img:/Users/Andy/Devel/todomvc-oo/docs/images/mgm-pattern-gui-facing-right.png>
+end note
+
+
+"Controller" --> "View" : set DOM
+"View" ..> "Controller" : GUI events
+"View" ..> App : GUI events
+Model ..> "Controller" : setter events (notify)
+App --> Model : set model
+User . View : interacts with
+User .[hidden] View
+
+note as b
+Controller is a Mediator
+Mediates between (and has a reference to) 
+* model
+* view
+end note
+
+note "View is the GUI e.g. DOM " as c
+
+Controller . b
+Controller .[hidden] b
+
+View . c
+View .[hidden] c
+
+
+@enduml
+
+
