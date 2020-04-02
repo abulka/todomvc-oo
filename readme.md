@@ -55,8 +55,7 @@ The Model (JSON or model) and View (DOM) are simple enough, its the Controller t
 I feel the challenge of GUI architectures is to tame the role of Controller into some semblance of coherance and symmetric organisation.
 
 
-![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/abulka/todomvc-oo/master/out/docs/plantuml/mvc-a-controller-pov/mvc-a-controller-pov.svg?sanitize=true)
-
+![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvc-a-controller-pov/mvc-a-controller-pov.svg?sanitize=true)
 
 ## Architecture
 
