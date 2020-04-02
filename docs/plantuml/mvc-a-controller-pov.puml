@@ -27,13 +27,15 @@ class "Model"  << (M,#FF7700) >> {
     attr3
     set_attr1(val)
     set_attr2(val)
-    set_attr3(val)
+    notify_all()  // broadcast
 }
 
 class "Controller" << (C,#FF7700)>> {
-    model
     view
-    notify()
+	app
+    model
+	on_gui_event()
+    on_notify()  // listen to broadcast
 }
 
 class "View" << (V,#FF7700) >> {
@@ -54,6 +56,7 @@ class App  << (A,#FF7700) >> {
     view-state
     business_logic1()
     business_logic2()
+	notify_all()   // broadcast
 }
 
 note as User #white
