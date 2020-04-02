@@ -1,9 +1,6 @@
----
-url_architecture: https://raw.githubusercontent.com/tcab/pagestest/master/docs/images/mvc-a-architecture.svg?sanitize=true
-url_events:       https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/todomvc_events.svg?sanitize=true
----
+# MVC-A - Architecture Pattern (Modle View Controller - App)
 
-# MVC-A - Architecture Pattern (Modle View Controller - App) VERS mvc-a-vers-root
+🦀VERS mvc-a-vers-root 🦀
 
 The role of the App is also important and often overlooked/undocumented. Whilst it is fine to wire Controllers directly to model instances, you will also need an App to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The App is a centralised class, a kind of hub - to hold business logic to manipulates the model. More details below:
 
