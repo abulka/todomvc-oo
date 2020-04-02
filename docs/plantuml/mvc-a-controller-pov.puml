@@ -4,8 +4,8 @@
 title Controller point of view
 
 header
-<font color=blue size=20>MVC-App Architecture</font>
-(c) Andy Bulka 2020
+<font color=PaleVioletRed size=20>MVC-App Architecture</font>
+by Andy Bulka 2020
 endheader
 
 package "App and Model" {
@@ -13,20 +13,26 @@ package "App and Model" {
     class App
 }
 
-Package GUI {
-    class "View"
-}
+' Package GUI {
+'     class "View"
+' }
 
 Package Controller #PaleVioletRed {
     class "Controller"
 }
 
 class "Model"  << (M,#FF7700) >> {
+    attr1
+    attr2
+    attr3
+    set_attr1(val)
+    set_attr2(val)
+    set_attr3(val)
 }
 
 class "Controller" << (C,#FF7700)>> {
     model
-    view    <i>e.g. DOM reference</i>
+    view
     notify()
 }
 
@@ -36,10 +42,18 @@ class "View" << (V,#FF7700) >> {
     checkbox inputs
     ---
     <img:/Users/Andy/Devel/todomvc-oo/docs/images/mgm-pattern-gui.png>
+
+    View is the GUI
+
+    e.g. DOM elements
+    e.g. GUI user controls
 }
 
 class App  << (A,#FF7700) >> {
-    model reference
+    model
+    view-state
+    business_logic1()
+    business_logic2()
 }
 
 note as User #white
@@ -48,29 +62,34 @@ note as User #white
 end note
 
 
-"Controller" --> "View" : set DOM
-"View" ..> "Controller" : GUI events
-"View" ..> App : GUI events
-Model ..> "Controller" : setter events (notify)
-App --> Model : set model
+"Controller" --> "View" : maintains /\n set DOM
+"Controller" -----> "Model" : modifies \n model\n
+"Controller" --> "App" : modifies \n app, \n access \n view state
+"View" ..> "Controller" #Green : GUI events
+
+Model ..> "Controller"  #DeepSkyBlue : events \n from model \n (setter)
+App ..> "Controller"  #DeepSkyBlue : events \n from app
+
+App --> Model : modifies \n model
 User . View : interacts with
 User .[hidden] View
 
-note as b
-Controller is a Mediator
-Mediates between (and has a reference to) 
-* model
-* view
+' note "View is the GUI e.g. DOM" as c
+' View . c
+' View .[hidden] c
+
+note as d
+**Controller** mediates between the
+View and **everything else**.
+
+Controller modifies the Model directly.
+Controller calls App business logic methods.
+Controller accesses App view state.
+
+Controller listens for events from Model & App.
 end note
-
-note "View is the GUI e.g. DOM " as c
-
-Controller . b
-Controller .[hidden] b
-
-View . c
-View .[hidden] c
-
+' Controller ... d
+' Controller ...[hidden] d
 
 @enduml
 
