@@ -15,9 +15,9 @@ This project fully implements the TodoMVC specification. It is implemented witho
 
 Whilst the MVC (Model View Controller) pattern is commonly and glowingly referred to, implementations can vary widely. Most documentation on MVC, including the official [wikipedia article](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) is vague on definitions and details.  This TodoMVC-OO project uses the MVCA pattern (formerly the [MGM](mgm.md) pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
 
-- The **View** means a modern GUI framework, and as such is already available to be used by the programmer.
+- The **View** means a modern GUI framework, and therefore is usually already available to be used by the programmer.
 - One or more **Controllers** mediate between the View and the rest of the Application, listening for GUI events. Nobody else knows about the View.
-- The **Model** is traditional, may contain some business logic, and may broadcast events when its attributes change.
+- The **Model** is traditional data, may contain some business logic, and may broadcast events when its attributes change.
 - The **Application** owns the model(s), holds view state and contains some business logic methods.
 - An Eventing system is needed, traditionally Observer pattern but the stronger decoupling and the proper event objects of the Publisher-Subscriber pattern is preferred.
 
@@ -163,13 +163,61 @@ Importantly, we must resist putting business logic into the Controller, simply l
 
 ### Application
 
-The role of the Application is also important and often overlooked/undocumented. The Application owns the Model, and looks after persisting it.
+The role of the Application is also important and often overlooked/undocumented. The Application owns the Model, and looks after persisting it. The Application can listen for internal Model events.
 
-Whilst it is fine to wire Controllers directly to model instances, you will also need the Application to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The Application is a centralised class, a kind of hub - to hold higher level business logic and more complex model manipulations. The Application class's functionality can of course be broken up into smaller pieces as software grows more complex but a class called `Application` should always still exist.
+Whilst it is fine to wire Controllers directly to model instances, you will also need the Application to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The Application is a centralised class, a kind of hub - to hold higher level business logic and more complex model manipulations. The Application class's functionality can of course be composed of smaller pieces as software grows more complex but a class called `Application` should always still exist.
 
-The Application can listen for internal Model events.
+#### Bootstrapping
 
-The bootstrapping of the system should be done in something other than the Application.  Typically some bootstrapping code creates an instance of Application. The bootstrapping code and the Controller code are the only parts of the architecture that know about the View specifics.
+The bootstrapping of the system should be done in something other than the Application class itself.  The bootstrapping in TodoMVC-OO is done in `app.js` which creates an instance of Application which is defined in `application.js`.
+
+```javascript
+
+(function (window) {
+    let config = {...}
+    new Application(config)
+})(window);
+```
+
+A config object with a list of callback methods is passed into the Application. Whenever the Application needs to instantiate a Controller (e.g. each time a TodoItem is created) it calls a callback function.  Callbacks functions secretly hide within themselves references to the DOM - which we don't want the Application to have. Thus the bootstrapping code and the Controller code are the only parts of the architecture that know about the View specifics.
+
+The following bootstrapping code happens to refers to the view through JQuery syntax e.g. `$('ul.todo-list')` and passes these references into the contructor of the Controller:
+
+```javascript
+let config = {
+    // Callback to create the todo item controllers - are added as needed
+
+    cb_todo: function (app, todo) {
+        new ControllerTodoItem(
+            app,
+            todo,
+            { $todolist: $('ul.todo-list') }
+        )
+    },
+
+    // Callbacks to create the permanent controllers
+
+    cb_header: function (app) {
+        new ControllerHeader(
+            app,
+            {
+                $input: $('.new-todo'),
+                $toggle_all: $('.toggle-all')
+            }
+        )
+    },
+    cb_footer: function (app) {
+        new ControllerFooter(
+            app,
+            {
+                $footer: $('footer'),
+                $footer_interactive_area: $('.footer')
+            })
+    }
+}
+```
+
+The Controller will itself have further references to the View DOM elements, however these references should be based on searching *within* the outer DOM element passed to the Controller - thus achieving some degree of 'component-isation' and re-use. For example the same Controller could be used to look after different DOM elements with different element id's.
 
 ## TodoMVC-OO
 
@@ -177,50 +225,40 @@ This project fully implements the TodoMVC specification and is implemented witho
 
 Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
 
-The bootstrapping is done in `app.js` which creates an instance of Application which is defined in `application.js`.  A config object is passed into the Application, so that the Application knows how to instantiate Controllers - without getting dirty knowledge of the Views that the Controllers know about.
-
 <!-- ![mvc-a-architecture](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/MVC-A-MGM-Architecture.svg?sanitize=true) -->
 
 ![mvc-a-architecture](https://raw.githubusercontent.com/tcab/pagestest/master/docs/images/mvc-a-architecture.svg?sanitize=true)
 
+### Improvements
+
+In this implementation, I notice that footer renders too early rather than right at the end of the initial render. Its just a subtle flash of the footer when the page is initially redrawn, but I'd like to correct this.
+
 ---
 
+### Resources
 
-## Resources
+- Official [TodoMVC project](http://todomvc.com/) with other implementations
+- [GitUML](https://www.gituml.com) diagramming used for this project
+- [Literate Code Mapping](https://github.com/abulka/lcodemaps) diagramming used for this project
 
-- [Website](https://www.gituml.com/editz/134)
-- [Documentation](https://www.gituml.com/editz/134)
-- [Used by](https://github.com/abulka/todomvc-oo)
-- [Blog](https://www.gituml.com/editz/136)
-- [FAQ](https://www.gituml.com/editz/136)
-
-Which is fully visible here.
-
-### Is TodoMVC-OO officially part of the TodoMVC project?
-
-This project is not not officially part of the famous [TodoMVC project](http://todomvc.com/) - as it is not a trendy framework, nor does it meet the criterion of "having a community" around it.  On the other hand, perhaps "Old Skool" OO is arguably historically more popular than any of the latest frameworks? 😉
+<!-- - [Used by](https://github.com/abulka/todomvc-oo) -->
+<!-- - [Website](https://www.gituml.com/editz/134) -->
+<!-- - [Blog](https://www.gituml.com/editz/136) -->
+<!-- - [FAQ](https://www.gituml.com/editz/136) -->
 
 ### Articles
 
-- [Medium article]()  (coming in Apr 2020)
-- [Literate Code Mapping](https://github.com/abulka/lcodemaps)
+<!-- - [Medium article]()  (coming in Apr 2020) -->
+- [MGM](mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
+- TodoECS - Entity Component System implementation of TodoMVC *(coming mid 2020)*
 
+<!-- ### Support
 
-### Support
-
-- [Stack Overflow](http://stackoverflow.com/questions/tagged/MVC-A)
-- [Twitter](http://twitter.com/unjazz)
-
-*Let us [know](https://github.com/tastejs/todomvc/issues) if you discover anything worth sharing.*
-
-
-## Implementation
-
-The app was created by studying the jQuery version of TodoMVC to understand the spec, then implementing it using traditional OO techniques incl. the use of proper controller objects.
-
-The only spec violation might be the flash of the footer comes too early rather than right at the end of the initial render.
+- [Stack Overflow](http://stackoverflow.com/questions/tagged/MVCA)
+- [Twitter](http://twitter.com/unjazz) -->
 
 ## Credit
 
 Created by [Andy Bulka](http://andypatterns.com)
 
+Note: This project is not not *officially* part of the [TodoMVC project](http://todomvc.com/) - as it is does not use a MVC framework library, nor does it meet the criterion of "having a community" around it.  On the other hand, perhaps a pattern is equivalent enough to a framework - after all there is a plain Javascript TodoMVC implementation officially available using ad-hoc techniques. Plus, there has been a "community" around the Object Oriented MVC pattern for decades now - hasn't there? 😉
