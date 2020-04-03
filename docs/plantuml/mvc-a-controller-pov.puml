@@ -1,11 +1,12 @@
 
 @startuml mvc-a-controller-pov
 
-title Controller point of view
+title Controller "mediates" between GUI \n and everything else \n
 
 header
-<font color=PaleVioletRed size=20>MVC-App Architecture</font>
+<font color=PaleVioletRed size=20>MVCA Architecture</font>
 by Andy Bulka 2020
+V2.1
 endheader
 
 package "App and Model" {
@@ -26,8 +27,8 @@ class "Model"  << (M,#FF7700) >> {
     attr2
     attr3
     set_attr1(val)
-    set_attr2(val)
-    notify_all()  // broadcast
+    set_attr2(val)   <color:DeepSkyBlue><i>// broadcast event
+    notify_all()     <color:DeepSkyBlue><i>// broadcast event
 }
 
 class "Controller" << (C,#FF7700)>> {
@@ -35,13 +36,14 @@ class "Controller" << (C,#FF7700)>> {
 	app
     model
 	on_gui_event()
-    on_notify()  // listen to broadcast
+    on_notify()    <color:DeepSkyBlue><i>// listen to broadcast events
 }
 
 class "View" << (V,#FF7700) >> {
     buttons
     text inputs
     checkbox inputs
+    <i>etc.
     ---
     <img:/Users/Andy/Devel/todomvc-oo/docs/images/mgm-pattern-gui.png>
 
@@ -56,7 +58,7 @@ class App  << (A,#FF7700) >> {
     view-state
     business_logic1()
     business_logic2()
-	notify_all()   // broadcast
+	notify_all()      <color:DeepSkyBlue><i>// broadcast event
 }
 
 note as User #white
@@ -65,13 +67,13 @@ note as User #white
 end note
 
 
-"Controller" --> "View" : maintains /\n set DOM
+"Controller" --> "View" : update View \n <i>e.g. set DOM attrs
 "Controller" -----> "Model" : modifies \n model\n
 "Controller" --> "App" : modifies \n app, \n access \n view state
 "View" ..> "Controller" #Green : GUI events
 
-Model ..> "Controller"  #DeepSkyBlue : events \n from model \n (setter)
-App ..> "Controller"  #DeepSkyBlue : events \n from app
+Model ..> "Controller"  #DeepSkyBlue : <color:DeepSkyBlue>events \n from model \n (setter)
+App ..> "Controller"  #DeepSkyBlue : <color:DeepSkyBlue>events \n from app
 
 App --> Model : modifies \n model
 User . View : interacts with
@@ -82,8 +84,10 @@ User .[hidden] View
 ' View .[hidden] c
 
 note as d
-**Controller** mediates between the
-View and **everything else**.
+The "View" is the GUI Framework (UI controls, DOM elements)
+
+View events go to one or more Controllers.
+Controllers update the View.
 
 Controller modifies the Model directly.
 Controller calls App business logic methods.
