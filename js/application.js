@@ -1,6 +1,6 @@
 class Application {  // owns the list of todo models, creates controllers through callbacks, doesn't refer to UI, has some business logic
     constructor(config) {
-        this.todos = []  // model
+        this.todos = []  // model collection
         this.filter = 'all'  // view model, options are: 'all', 'active', 'completed'
         this.callback_config = config
 

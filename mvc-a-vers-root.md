@@ -26,7 +26,7 @@ The App object is central to this architecture:
 * holds view state
 * contains some business logic methods
 
-Eventing is also an important consideration in decoupling models from controllers, and to facilitate abstract communication between objects. We use eventing (event name -> function) rather than the traditional observer pattern (object -> object method).
+
 
 ## Diagrams
 
@@ -47,27 +47,55 @@ Ensure you are using Chrome.
 ![todomvc_events](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/todomvc_events.svg?sanitize=true)
 *(click on diagram for more detail and the ability to zoom)*
 
-### Old MGM Pattern
 
-![mgm-pattern-main-image](docs/images/mgm-pattern-main-image.png)
 
-This is my old MGM pattern which is very similar to what has been implemented in the article. Its a very old paper I wrote when I was young, and it tried to clarify what the 'view' was and the exact nature and role of the controller. Looking back on it, its a historical moment which later led to the TodoMVC-OO implementation here, and the MVC-A pattern.
 
-Its more understandable if you think of the 'mediator' as a mere 'controller'. 
 
-HTML for this old paper now available [here](https://abulka.github.io/todomvc-oo/pdf_as_html/andybulkamodelguimediatorpattern.html).
+(Model View Controller - App)
 
-#### MGM pattern revisited
-(taken from Mac notes, exported)
+Article on MVC-A  ⬅️ this is a bit more abstract - generalising what this implementation discovered
+- Article on MVC-A [here](https://abulka.github.io/todomvc-oo/mvc-a)
+- Article on MVC-A mvc-a-vers-root version [here](mvc-a-vers-root.md)
 
-http://www.andypatterns.com/index.php/design_patterns/model_gui_mediator_pattern/
+## TodoMVC-OO
 
-My article didn't mention that you can have code in the GUI control which directly accesses the mediator - you don't need the tag stuff.
+This section explains this project in detail !!  Might later publish this on Medium.
 
-GUI could potentially access model directly. No big deal.
+This is a "traditional" Object Oriented implementation using my knowledge of Object Oriented programming, MVC patterns incl. my old [MGM pattern](http://www.andypatterns.com/index.php/design_patterns/model_gui_mediator_pattern/) where I called the Controller a 'Mediator'. The important thing is that the role of Controller is celebrated as a proper object. Controllers mediate between the GUI and the model/app. HTML for this old paper now available [here](https://abulka.github.io/todomvc-oo/pdf_as_html/andybulkamodelguimediatorpattern.html).
 
-The update loop of setting the model (from the mediator) might trigger another notification to the mediator. This is inefficient and may cause an unecessary double refresh of the GUI. However modifying the model secretly may mean other mediators miss out on their updates. So the only thing to do is for the mediator to intercept the update to itself (as a result of it setting the model) and stopping it. How this is done is tricky, probably just check the value and if the value is already set, ignore the notification message. Actually this is probably a good overal optimisation anyway!
 
-Originally no default implementation or github repo.  Now we do!
 
-Warning: Somehow MGM pattern (old version) is still active!?
+
+
+## Background
+
+The Model View Controller (MVC) design pattern is almost universally acknowledged as a good thing - it separates the concerns of the model from the view, with the "controller" responding to events and populating the GUI.
+
+Arguably if you have a JSON data structure that you want to visualise (the model), and some GUI event handler functions (controllers) then yes, you are doing some form of MVC. However I believe there are benefits in doing MVC in a more organised way - via the introduction of proper controller classes and notification events as defined by the Observer design pattern.
+
+> I believe there are benefits in doing MVC in a more organised way - via the introduction of proper controller classes and using Observer design pattern eventing.
+
+Background - what is MVC?
+Let's assume that the MVC (model-view-controller) architecture in the case of getting model data rendered onto a HTML page works like this:
+- Model - contains the data. Can be a object with methods, or just pure JSON data.
+- View - are the DOM elements that are visualised in HTML.
+- Controller - code which copies information from the app & model into the DOM. The controller also consists of any DOM event handler code that copies information back from the DOM and into the model again, as well code which manipulates the DOM / visualisation.
+
+I quite like another more colloquial description of MVC given in a [stackoverflow answer](https://stackoverflow.com/questions/2626803/mvc-model-view-controller-can-it-be-explained-in-simple-terms) by Javier:
+
+> the Model is the part of the code that knows things
+> the View is the part of the code that shows the things the Model knows
+> the Controller is the part of the code that gets commands from the user and tells the View what to show and the Model what to know.
+
+## The Controller role
+The Controller isn't necessarily a single thing. A bunch of GUI event handler functions are part of the 'controller role'. Code that copies data from the model into the GUI/DOM is part of the Controller role.
+
+> The Model (JSON or model) and View (DOM) are simple enough, its the Controller that is the most interesting aspect of MVC.
+
+I feel the challenge of GUI architectures is to tame the role of Controller into some semblance of coherance and symmetric organisation.
+
+Controller is a Mediator. It mediates between (and has references to) the
+* model & app
+* view
+
+
