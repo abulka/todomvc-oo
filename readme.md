@@ -178,7 +178,7 @@ The bootstrapping of the system should be done in something other than the Appli
 })(window);
 ```
 
-A config object with a list of callback methods is passed into the Application. Whenever the Application needs to instantiate a Controller (e.g. each time a TodoItem is created) it calls a callback function.  Callbacks functions secretly hide within themselves references to the DOM - which we don't want the Application to have. Thus the bootstrapping code and the Controller code are the only parts of the architecture that know about the View specifics.
+A config object with a list of callback methods is passed into the Application. Whenever the Application needs to instantiate a Controller (e.g. each time a TodoItem is created) it calls a callback function.  Callback functions secretly hide, within themselves, references to the DOM - which we don't want the Application to have. In this way, the bootstrapping code and the Controller code are the only parts of the architecture that know about the View specifics (which we want to restrict).
 
 The following bootstrapping code happens to refers to the view through JQuery syntax e.g. `$('ul.todo-list')` and passes these references into the contructor of the Controller:
 
@@ -216,7 +216,7 @@ let config = {
 }
 ```
 
-The Controller will itself have further references to the View DOM elements, however these references should be based on searching *within* the outer DOM element passed to the Controller - thus achieving some degree of 'component-isation' and re-use. For example the same Controller could be used to look after different DOM elements with different element id's.
+Of course the Controller itself will have further references to View DOM elements, however these references should be based on searching *within* the outer DOM element passed to the Controller - thus achieving some degree of 'component-isation' and re-use. For example the same Controller could be used to look after different DOM elements with different element id's.
 
 ## TodoMVC-OO
 
