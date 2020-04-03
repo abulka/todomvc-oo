@@ -1,12 +1,12 @@
 
-@startuml mvc-a-controller-pov
+@startuml mvca-controller-pov
 
 title Controller "mediates" between GUI \n and everything else \n
 
 header
 <font color=PaleVioletRed size=20>MVCA Architecture</font>
 by Andy Bulka 2020
-V2.1
+V2.2
 endheader
 
 package "App and Model" {
@@ -45,7 +45,7 @@ class "View" << (V,#FF7700) >> {
     checkbox inputs
     <i>etc.
     ---
-    <img:/Users/Andy/Devel/todomvc-oo/docs/images/mgm-pattern-gui.png>
+    <img:/Users/Andy/Devel/todomvc-oo/docs_root/images/mgm-pattern-gui.png>
 
     View is the GUI
 
@@ -63,7 +63,7 @@ class App  << (A,#FF7700) >> {
 
 note as User #white
     User
-    <img:/Users/Andy/Devel/todomvc-oo/docs/images/mgm-pattern-gui-facing-right.png>
+    <img:/Users/Andy/Devel/todomvc-oo/docs_root/images/mgm-pattern-user-facing-right.png>
 end note
 
 
@@ -83,18 +83,8 @@ User .[hidden] View
 ' View . c
 ' View .[hidden] c
 
-note as d
-The "View" is the GUI Framework (UI controls, DOM elements)
-
-View events go to one or more Controllers.
-Controllers update the View.
-
-Controller modifies the Model directly.
-Controller calls App business logic methods.
-Controller accesses App view state.
-
-Controller listens for events from Model & App.
-end note
+' note as d
+' end note
 ' Controller ... d
 ' Controller ...[hidden] d
 

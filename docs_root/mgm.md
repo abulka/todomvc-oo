@@ -2,19 +2,19 @@
 
 This design pattern (written in 2000) available to view [here](https://abulka.github.io/todomvc-oo/pdf_as_html/andybulkamodelguimediatorpattern.html).
 
-![mgm-pattern-main-image](docs/images/mgm-pattern-main-image.png)
+![mgm-pattern-main-image](images/mgm-pattern-main-image.png)
 
 The MGM pattern is an early version of the [MVCA](https://github.com/abulka/todomvc-oo) pattern.
-
-Its a very old paper that I wrote when I was young, and it tried to clarify what the 'view' was and the exact nature and role of the controller. Looking back on it, its a historical moment which later led to my [TodoMVC-OO](https://github.com/abulka/todomvc-oo) implementation using the more refined MVCA pattern.
 
 ## Thoughts twenty years later...
 
 Its now 2020 in the midst of the Corona virus. Re-reading my MGM pattern many years later, I notice that:
 
+- Its a very old paper that I wrote when I was young, and it tried to clarify what the 'view' was and the exact nature and role of the 'controller'. Looking back on it, its a historical moment which later led to my [TodoMVC-OO](https://github.com/abulka/todomvc-oo) implementation using the more refined MVCA pattern.
+
 - Its more understandable if you think of the 'Mediator' as a 'Controller'. I could have used the term Controller more liberally, but at the time I wanted to emphasise the unclarity of various definitions of Controller, and emphasise the Mediator design pattern that detected in MVC. I have corrected this in the later [MVCA](https://github.com/abulka/todomvc-oo) pattern where... the Controller is back!  Its still a Mediator though 😉
 
-- Its more understandable if you think of the 'GUI' as 'View'. I could have used the term View more liberally, but at the time I wanted to emphasise the unclarity of various definitions of View, and emphasise the use of off the shelf GUI widgets as part of a GUI framework.  After all, in the 1960's Views were code that drew lines onto a canvas, such early days.
+- Its more understandable if you think of the 'GUI' as 'View'. I could have used the term View more liberally, but at the time I wanted to emphasise the unclarity of various definitions of View, and emphasise the use of off the shelf GUI widgets as part of a GUI framework.  After all, in the 1960's Views were often user code that drew lines onto a canvas to make widgets - such early days.
 
 - MGM referred to tags in GUI widgets, which I suppose these days would be equivalent to DOM elements having attributes or id's. MGM could have made more references to GUI widgets communicating to Controller/Mediator via events - you don't need the tag stuff.
 

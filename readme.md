@@ -6,14 +6,13 @@ The classic Javascript [TodoMVC app](https://github.com/tastejs/todomvc) impleme
 
 Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
 
-
 ---
 
 ## MVCA Architectural Pattern
 
 This project fully implements the TodoMVC specification. It is implemented without a framework, using plain Object Oriented programming + **MVCA** architectural design pattern:
 
-Whilst the MVC (Model View Controller) pattern is commonly and glowingly referred to, implementations can vary widely. Most documentation on MVC, including the official [wikipedia article](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) is vague on definitions and details.  This TodoMVC-OO project uses the MVCA pattern (formerly the [MGM](mgm.md) pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
+Whilst the MVC (Model View Controller) pattern is commonly and glowingly referred to, implementations can vary widely. Most documentation on MVC, including the official [wikipedia article](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) is vague on definitions and details.  This TodoMVC-OO project uses the MVCA pattern (formerly the [MGM](docs_root/mgm.md) pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
 
 - The **View** means a modern GUI framework, and therefore is usually already available to be used by the programmer.
 - One or more **Controllers** mediate between the View and the rest of the Application, listening for GUI events. Nobody else knows about the View.
@@ -23,7 +22,7 @@ Whilst the MVC (Model View Controller) pattern is commonly and glowingly referre
 
 Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
-![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvc-a-controller-pov/mvc-a-controller-pov.svg?sanitize=true)
+![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvca-controller-pov/mvca-controller-pov.svg?sanitize=true)
 
 ## MVCA In Detail
 
@@ -225,9 +224,7 @@ This project fully implements the TodoMVC specification and is implemented witho
 
 Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
 
-<!-- ![mvc-a-architecture](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/MVC-A-MGM-Architecture.svg?sanitize=true) -->
-
-![mvc-a-architecture](https://raw.githubusercontent.com/tcab/pagestest/master/docs/images/mvc-a-architecture.svg?sanitize=true)
+![mvc-a-architecture](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_root/images/mvca-architecture-gituml.svg?sanitize=true)
 
 ### Improvements
 
@@ -249,7 +246,7 @@ In this implementation, I notice that footer renders too early rather than right
 ### Articles
 
 <!-- - [Medium article]()  (coming in Apr 2020) -->
-- [MGM](mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
+- [MGM](docs_root/mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
 - TodoECS - Entity Component System implementation of TodoMVC *(coming mid 2020)*
 
 <!-- ### Support
