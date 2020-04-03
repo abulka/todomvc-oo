@@ -10,7 +10,7 @@ Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
 
 ## MVCA Architectural Pattern
 
-This project fully implements the TodoMVC specification. It is implemented without a framework, using plain Object Oriented programming + **MVCA** architectural design pattern:
+This project fully implements the TodoMVC specification. It is implemented without a framework, using plain Object Oriented programming + the **MVCA** architectural design pattern:
 
 Whilst the MVC (Model View Controller) pattern is commonly and glowingly referred to, implementations can vary widely. Most documentation on MVC, including the official [wikipedia article](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) is vague on definitions and details.  This TodoMVC-OO project uses the MVCA pattern (formerly the [MGM](docs_root/mgm.md) pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
 
@@ -40,7 +40,7 @@ Both eventing systems are used in the TodoMVC-OO implementation. As you can see 
 
 Here is a [Literate Code Map](https://github.com/abulka/lcodemaps) of the event flow of TodoMVC-OO. Events are reified as coloured objects, each different event gets a different colour. 
 
-![todomvc_events](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs/images/todomvc_events.svg?sanitize=true)
+![todomvc_events](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_root/images/todomvc_events.svg?sanitize=true)
 *(click on diagram for more detail and the ability to zoom)*
 
 The eventing pattern depicted here is [Publisher-Subscriber](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) where real event objects are 'broadcast' into the ether/event bus/system/whatever - allowing any code in the system to subscribe and respond - the point is, the code emitting the event does not have references to receiver object/methods.
