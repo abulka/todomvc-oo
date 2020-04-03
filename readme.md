@@ -22,7 +22,7 @@ Whilst the MVC (Model View Controller) pattern is commonly and glowingly referre
 
 Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
-![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvca-controller-pov/mvca-controller-pov.svg?sanitize=true)
+![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs_root/plantuml/mvca-controller-pov/mvca-controller-pov.svg?sanitize=true)
 
 ## MVCA In Detail
 
