@@ -1,40 +1,75 @@
 # Object Oriented Controller • [TodoMVC](http://todomvc.com)
 
-The classic TodoMVC app implemented in Javascript, but without a 'fancy framework' - using Object Oriented programming incl. distinct MVC controller objects.
+The classic Javascript [TodoMVC app](https://github.com/tastejs/todomvc) implemented without a framework, using plain Object Oriented programming + a traditional MVC design pattern. Distinct, mediating Controller objects are the key to this implementation.
 
 ![](https://github.com/tastejs/todomvc-app-css/raw/master/screenshot.png)
 
-Running demo [here](https://abulka.github.io/todomvc-oo/index.html)  -  play with the actual app - **had to disable jekyl for node_modules etc. to upload properly**.
+Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
 
 ## THE ARTICLE BELOW IS A WORK IN PROGRESS - DO NOT READ THIS YET!
 
-2nd April 2020
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+3rd April 2020
 
 It should be complete in a few more days.
 
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
+DRAFT
+
 ---
 
-## MVC-App Architectural Pattern
+## MVCA Architectural Pattern
 
-DRAFT
+Whilst the [MVC](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) (Model View Controller) pattern is commonly referred to implementations can vary widely. Most documentation on MVC, including the official wikipedia article is vague on details.  This project uses the MVCA pattern (formerly the MGM pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
 
-DRAFT
+- The **View** means a modern GUI framework, and as such is already available to be used by the programmer.
+- One or more **Controllers** mediate between the View and the rest of the Application, listening for GUI events. Nobody else knows about the View.
+- The **Model** is traditional, may contain some business logic, and may broadcast events when its attributes change.
+- The **Application** owns the model(s), holds view state and contains some business logic methods.
+- An Eventing system is needed, traditionally Observer pattern but the stronger decoupling and the proper event objects of the Publisher-Subscriber pattern is preferred.
 
-DRAFT
+Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
-DRAFT
+![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvc-a-controller-pov/mvc-a-controller-pov.svg?sanitize=true)
 
-DRAFT
+---
 
-DRAFT
-
-DRAFT
-
-DRAFT
-
-DRAFT
-
-DRAFT
 
 (Model View Controller - App)
 
@@ -84,7 +119,6 @@ Controller is a Mediator. It mediates between (and has references to) the
 * model & app
 * view
 
-![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs/plantuml/mvc-a-controller-pov/mvc-a-controller-pov.svg?sanitize=true)
 
 ## Architecture
 
