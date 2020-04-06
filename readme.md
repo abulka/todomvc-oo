@@ -143,18 +143,20 @@ I feel the challenge of GUI architectures is to tame the role of Controller into
 
 In TodoMVC-OO we have a Controller class `ControllerTodoItem` and instantiate one per TodoItem model instance. That's arguably a lot of controller instances, but this approach allows fine grained updating of the DOM. In contrast, the Jquery version of TodoMVC rebuilds the entire todo DOM on each refresh - something that might become inefficient for non-toy apps.
 
-In TodoMVC-OO we have a Controller class `ControllerHeader` for looking after the header part of the GUI and `ControllerFooter` for looking after the footer area, which is where the `filter` buttons are and the count of uncompleted todo items is displayed.
+In TodoMVC-OO we have a Controller class `ControllerHeader` for looking after the header part of the GUI and `ControllerFooter` for looking after the footer area, which is where the `filter` buttons are and the count of uncompleted todo items is displayed. The number of Controllers you create is up to you: one Controller per GUI element for fine grained updates, a more relaxed approach of one Controller per related group of GUI elements (my preference) or arguably even one Controller for all GUI elements! I go into more academic detail on this topic in my [MGM](docs_root/mgm.md) pattern paper.
 
 By clearly defining what a mediating Controller is, and organising our app into different sensible controllers, we tame our design and prevent it from turning into spaghetti. 
 
-- View events go to one or more Controllers.
-- Controllers update the View.
+- View events *only* talk to Controllers:
+    - View events ('gui events' e.g. via `.on('click', ...)`) go to one or more Controllers.
+    - Controllers update the View, usually in reponse to an 'internal event' notification.
 
-- Controller modifies the Model directly.
-- Controller calls App business logic methods.
-- Controller accesses App view state.
+- The Controller talks to the rest of the system:
+    - Accesses App view state.
+    - Calls App business logic methods.
+    - Modifies the Model directly.
 
-- Controller listens for events from Model & App.
+- The Controller listens for 'internal events' broadcast from Model & App.
 
 Whilst that may seem like a lot to understand, its basically saying Controllers talk to the GUI - nobody else does. Controllers then call into the rest of the system to get things done
 
