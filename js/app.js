@@ -19,7 +19,10 @@
 			new ControllerTodoItem(
 				app,
 				todo,
-				{ $todolist: $('ul.todo-list') }
+				{ 
+					$todolist: $('ul.todo-list'),
+					$todo_template: $('#todo-template'),
+			 	}
 			)
 		},
 
@@ -48,7 +51,8 @@
 				app,
 				{
 					$footer: $('footer'),
-					$footer_interactive_area: $('.footer')
+					$footer_interactive_area: $('.footer'),
+					$footer_template: $('#footer-template'),
 				})
 		}
 	}

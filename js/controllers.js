@@ -20,7 +20,7 @@ class ControllerTodoItem {
 		this.gui = gui_dict
 
 		this.gui_id = this.model_ref.id  // might as well use unqique .id of model for the gui <li> data-id
-		this.todoTemplate = Handlebars.compile($('#todo-template').html());
+		this.todoTemplate = Handlebars.compile(this.gui.$todo_template.html());
 		this.notify_func = this.notify.bind(this)  // remember exact signature of func after it goes through .bind() mangling - so that we can later remove listener
 
 		// Gui events
@@ -190,7 +190,8 @@ class ControllerFooter {  // handles filters, reporting number of items
 	constructor(app, gui_dict) {
 	  	this.app = app
 		this.gui = gui_dict
-		this.footerTemplate = Handlebars.compile($('#footer-template').html());
+		// this.footerTemplate = Handlebars.compile($('#footer-template').html());
+		this.footerTemplate = Handlebars.compile(this.gui.$footer_template.html());
 		  
 		// Gui events
 		this.gui.$footer.on('click', '.clear-completed', this.destroyCompleted.bind(this))
