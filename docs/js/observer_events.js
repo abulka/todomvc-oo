@@ -1,5 +1,5 @@
 /**
- * Idiomatic Javascript eventing to implement Subject/Observer pattern
+ * Idiomatic Javascript eventing to implement Publisher-Subscriber pattern
  * 
  * Subjects call this function e.g. notify_all("hello")
  * Observers should be wired up with e.g. document.addEventListener("hello", (event) => { ... })
