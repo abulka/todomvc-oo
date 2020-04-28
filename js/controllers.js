@@ -103,7 +103,7 @@ class ControllerTodoItem {
 		if ($existing_li.length == 1)
 			$existing_li.replaceWith(li)  // replace existing li
 		else if (this.gui.$todolist.find('li').length == 0)
-			this.gui.$todolist.append($(li))  // create initial li
+			this.gui.$todolist.append($(li))  // create initial li when todo gui list is empty
 		else
 			$(li).insertAfter(this.gui.$todolist.find('li').last())  // append after last li
 		return $(`li[data-id=${this.gui_id}]`)
