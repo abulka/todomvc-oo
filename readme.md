@@ -236,7 +236,7 @@ In this implementation, I notice that footer renders too early rather than right
 
 ### Resources
 
-- [GUI Showdown MVCA](https://abulka.github.io/gui-showdown/main_mvca.html) another example of project implemented using the MVCA architecture (Javascript, open source)
+- [GUI Showdown MVCA](https://abulka.github.io/gui-showdown/main_mvca.html) another example of an app implemented using the MVCA architecture (Javascript, open source)
 - Official [TodoMVC project](http://todomvc.com/) with other TodoMVC implementations (e.g. Vue, Angular, React etc.)
 - [GitUML](https://www.gituml.com) diagramming used for this project
 - [Literate Code Mapping](https://github.com/abulka/lcodemaps) diagramming used for this project
