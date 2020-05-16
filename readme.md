@@ -156,11 +156,12 @@ Two eventing systems should be distinguished:
 Both eventing systems are used in the TodoMVC-OO implementation. As you can see in the diagram above, DOM eventing reaches the Controllers, but no further. The remaining eventing is internal.
 
 Here is a [Literate Code Map](https://github.com/abulka/lcodemaps) of the event flow of TodoMVC-OO. Events are reified as coloured objects, each different event gets a different colour. 
+![todomvc event flow](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs_other/plantuml/todomvc-oo-event-flow-gituml-134.png)
+*TodoMVC-OO event flow.*
 
-![todomvc event flow](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg?sanitize=true)
-*(click on diagram for more detail and the ability to zoom)*
-
-> Note: the above image was generated using GitUML, which can reverse engineer Javascript source code into UML style diagrams - see [diagram 134](https://www.gituml.com/viewz/134).
+- The above diagram was generated automatically from Javascript source code pulled from GitHub using [GitUML](www.gituml.com).
+- Click [here](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg) for more diagram detail as a .svg and the ability to zoom. 
+- View this actual [diagram 134](https://www.gituml.com/viewz/134) on GitUML.
 
 The eventing pattern depicted here is [Publisher-Subscriber](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) where real event objects are 'broadcast' into the ether/event bus/system/whatever - allowing any code in the system to subscribe and respond - the point is, the code emitting the event does not have references to receiver object/methods.
 
