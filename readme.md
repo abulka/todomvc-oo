@@ -35,7 +35,6 @@ The **Model** is traditional, may contain some business logic, and may broadcast
 By traditional, I mean the Model does not know about anything else except perhaps other models. Its the core model of your data, the domain of the what the application is all about. In the case of the Todo application, it is a collection of Todo items, which can be marked completed. 
 
 ```javascript
-
 class TodoItem {
     constructor(title, id, completed) {
         this._title = title == undefined ? "" : title;
@@ -177,7 +176,6 @@ The Javascript built in Publisher-Subscriber eventing system is used as the inte
 The bootstrapping of the system should be done in something other than the Application class itself.  The bootstrapping in TodoMVC-OO is done in `app.js` which creates an instance of Application which is defined in `application.js`.
 
 ```javascript
-
 (function (window) {
     let config = {...}
     new Application(config)
