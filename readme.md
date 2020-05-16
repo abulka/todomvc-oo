@@ -173,7 +173,8 @@ The Javascript built in Publisher-Subscriber eventing system is used as the inte
 
 ## Application Bootstrapping
 
-The bootstrapping of the system should be done in something other than the Application class itself.  The bootstrapping in TodoMVC-OO is done in `app.js` which creates an instance of Application which is defined in `application.js`.
+To get things running, some bootstrapping code will create an instance of the Application which in turn creates all the Controllers and loads the Model. 
+The bootstrapping in TodoMVC-OO is done in `app.js` which creates an instance of Application which is defined in `application.js`.
 
 ```javascript
 (function (window) {
@@ -182,9 +183,17 @@ The bootstrapping of the system should be done in something other than the Appli
 })(window);
 ```
 
-A config object with a list of callback methods is passed into the Application. Whenever the Application needs to instantiate a Controller (e.g. each time a TodoItem is created) it calls a callback function.  Callback functions secretly hide, within themselves, references to the DOM - which we don't want the Application to have. In this way, the bootstrapping code and the Controller code are the only parts of the architecture that know about the View specifics (which we want to restrict).
+Notice that a `config` object with a list of callback methods is passed into the Application. 
 
-The following bootstrapping code happens to refers to the view through JQuery syntax e.g. `$('ul.todo-list')` and passes these references into the contructor of the Controller:
+Giving the Application class knowledge of individual Controller classes and all the GUI view elements they need is arguably contaminating the Application class with too much GUI view and Controller knowledge. 
+
+The solution I use is to pass the Application a `config` object which contains a bunch of callbacks. Each callback function will magically create a Controller instance, wired to look after its GUI elements. Each callback function hides, within itself, references to the DOM - which we don't want the Application to have. In this way, the bootstrapping code and the Controller code are the only parts of the architecture that know about the View specifics (which we want to restrict).
+
+Thus whenever the Application needs to instantiate a Controller (e.g. each time a TodoItem is created) it calls a `config` callback function.
+Another example is during bootup - some permanent Controllers need to be created, like the Controller looking after the header area, so the Application calls 
+`this.callback_config.cb_header(this)` which creates an instance of the `ControllerHeader` wired to `$('.new-todo')` and `$('.toggle-all')`.  The Application only needs to know the callback function names and thus remains pure.
+
+Notice in the `config` object below that each callback refers to the view through JQuery syntax e.g. `$('ul.todo-list')` and passes these references into the contructor of the Controller:
 
 ```javascript
 let config = {
