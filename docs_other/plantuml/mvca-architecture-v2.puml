@@ -1,4 +1,4 @@
-@startuml
+@startuml mvca-architecture-v2
 
 title Controller "mediates" between GUI \n and everything else \n
 
@@ -44,7 +44,7 @@ class "View" << (V,#FF7700) >> {
     checkbox inputs
     <i>etc.
     ---
-    <img:https://github.com/abulka/todomvc-oo/raw/master/docs_other/images/mgm-pattern-gui.png>
+    <img:https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_other/images/mgm-pattern-gui.png>
 
     View is the GUI
 
@@ -62,7 +62,7 @@ class App  << (A,#FF7700) >> {
 
 note as User #white
     User
-    <img:https://github.com/abulka/todomvc-oo/raw/master/docs_other/images/mgm-pattern-user-facing-right.png>
+    <img:https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_other/images/mgm-pattern-user-facing-right.png>
 end note
 
 

@@ -3,7 +3,9 @@ NOTES on diagrams.txt
 
 Regenerate by vscode plantuml command
 
-The output goes into `out/docs_other` - using the same name as the `.puml` file.  If you add a name after the `@startuml` directive then you can override the output name (which is confusing so I don't).
+The output goes into `out/docs_other` - using the same name as the `.puml` file.  If you have a title then that name will be used! 
+
+> If you add a name after the `@startuml` directive then you can override the output name (which is confusing so I don't, unless I have a title which is throwing off the file based naming, in which case I have to).
 
 The plantuml plugin should be configured to not create a subdir, otherwise there is too much nesting of dirs.
 

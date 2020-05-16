@@ -22,7 +22,7 @@ Whilst the MVC (Model View Controller) pattern is commonly and glowingly referre
 
 Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
-![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs_other/plantuml/mvca-architecture-v2?sanitize=true)
+![MVCA Architecture](https://github.com/abulka/todomvc-oo/raw/master/out/docs_other/plantuml/mvca-architecture-v2.svg?sanitize=true)
 
 ## MVCA In Detail
 
@@ -157,7 +157,7 @@ Both eventing systems are used in the TodoMVC-OO implementation. As you can see 
 
 Here is a [Literate Code Map](https://github.com/abulka/lcodemaps) of the event flow of TodoMVC-OO. Events are reified as coloured objects, each different event gets a different colour. 
 
-![todomvc_events](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg?sanitize=true)
+![todomvc event flow](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg?sanitize=true)
 *(click on diagram for more detail and the ability to zoom)*
 
 > Note: the above image was generated using GitUML, which can reverse engineer Javascript source code into UML style diagrams - see [diagram 134](https://www.gituml.com/viewz/134).
