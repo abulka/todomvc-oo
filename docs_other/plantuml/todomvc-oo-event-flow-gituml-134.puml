@@ -1,0 +1,369 @@
+' From https://www.gituml.com/editz/134
+
+
+'Literate Code Map macros
+
+!procedure method($name, $params="")
+.. def <u><b>$name</b></u>($params) ..
+!endprocedure
+
+!procedure xref($dest, $kind="dest")
+!if ($kind == "source")
+<color:Red><u>$dest</u></color>
+!else
+<color:Red>$dest</color>
+!endif
+!endprocedure
+
+!$code = "<color:royalBlue><size:14>"
+!$codeb = "<color:DarkSlateGray><size:12>"
+!$codeg = "<color:Gray><size:12>"
+!$codeb = "<color:royalBlue>"
+!$codep = "<color:Purple><size:14>"
+
+
+
+' GENERATED
+
+
+class App {
+	constructor()
+    add()
+    delete()
+    ---
+  
+method("constructor", "")
+
+    Event wiring - listening for these events ocurring in the system
+    upon receiving this event, (event) => { this.delete(event.detail.from) })
+
+    LISTEN << <color:Tomato>deleted_todoitem</color>
+
+    <color:royalBlue><size:14>    document.addEventListener("deleted todoitem", 
+
+method("add", "")
+    
+    will tell e.g. footer controller to update displayed count
+    
+    BROADCAST >> <color:LimeGreen>app_model_changed</color>
+      
+    <color:royalBlue><size:14>    notify_all("app model changed", this)
+  
+method("delete", "")
+    
+    called as a result of listening to the <color:Tomato>deleted_todoitem</color> event
+    will now tell e.g. footer controller to update displayed count
+
+    BROADCAST >> <color:LimeGreen>app_model_changed</color>
+      
+    <color:royalBlue><size:14>    notify_all("app model changed", this)
+        
+method("Load", "")
+  
+    all todo item controllers listen for and will receive this <color:DeepSkyBlue>modified_todoitem</color>
+    no listeners except root debug listener, displaying the model debug view ("app model changed")
+
+    BROADCAST >> <color:DeepSkyBlue>modified_todoitem</color>
+    BROADCAST >> <color:LimeGreen>app_model_changed</color>
+      
+   <color:royalBlue><size:14>    notify_all("modified todoitem", this, options)
+   <color:royalBlue><size:14>    notify_all("app model changed", this)
+  }
+
+class ControllerTodoItem {
+  
+    
+method("constructor", "")
+
+  	The modified and deleted events will come from todo model item, whereas the <color:Sienna>filter changed</color>
+    event will come from the footer controller.
+  
+    LISTEN << <color:DeepSkyBlue>modified_todoitem</color>
+    LISTEN << <color:Tomato>deleted_todoitem</color>
+    LISTEN << <color:Sienna>filter_changed</color>
+    
+    <color:royalBlue><size:14>    document.addEventListener("modified todoitem", this.notify_func)
+    <color:royalBlue><size:14>    document.addEventListener("deleted todoitem", this.notify_func)
+    <color:royalBlue><size:14>    document.addEventListener("filter changed", this.notify_func)
+  
+method("_delete_gui", "")
+
+  	delete the GUI element and unwire any listeners to this controller
+  	UNLISTEN <<X <color:DeepSkyBlue>modified_todoitem</color>
+  	UNLISTEN <<X <color:Tomato>deleted_todoitem</color>
+  	UNLISTEN <<X <color:Sienna>filter_changed</color>
+  
+    <color:royalBlue><size:14>    document.removeEventListener("modified todoitem", this.notify_func, false)
+    <color:royalBlue><size:14>    document.removeEventListener("deleted todoitem", this.notify_func, false)
+    <color:royalBlue><size:14>    document.removeEventListener("filter changed", this.notify_func, false)
+  
+method("notify", "event")
+
+  	Listened for events end up here. <<
+    Checks for event.type and performs what is required.
+  
+    Note: this method is not called as a result of the gui events, but as a 
+    result of listening to internal events
+
+   <color:royalBlue><size:14>    if (event.type == "modified todoitem" ... // <color:DeepSkyBlue>modified_todoitem</color>
+   <color:royalBlue><size:14>    else if (event.type == "deleted todoitem" ...  // <color:Tomato>deleted_todoitem</color>
+   <color:royalBlue><size:14>	else if (event.type == "filter_changed") ...  // <color:Sienna>filter_changed</color>
+  
+  }
+
+class ControllerFooter {
+    
+method("constructor", "")
+
+    LISTEN << <color:LimeGreen>app_model_changed</color>
+    LISTEN << <color:DeepSkyBlue>modified_todoitem</color>
+  
+    <color:royalBlue><size:14>    document.addEventListener("app model changed", (event) => { this.notify(event) })
+    <color:royalBlue><size:14>    document.addEventListener("modified todoitem", (event) => { this.notify(event) })
+
+method("filter_click", "e")
+
+	this broadcast goes to all the todoitem controllers
+    
+    BROADCAST >> <color:Sienna>filter_changed</color>
+ 
+    <color:royalBlue><size:14>  	notify_all("filter changed", this, {'filter': this.filter});
+  
+method("notify", "event")
+  
+    Renders the footer area, incl. count of number of todo items yet to complete.
+
+}
+
+class TodoItem {
+
+method("delete", "")
+  
+    BROADCAST >> <color:Tomato>deleted_todoitem</color>
+  
+    <color:royalBlue><size:14>    notify_all("deleted todoitem", this)
+
+method("dirty", "")
+
+  	Called when modify any of the todo item's attributes 
+    e.g. 'completed' or 'title'
+  
+    BROADCAST >> <color:DeepSkyBlue>modified_todoitem</color>
+  
+    <color:royalBlue><size:14>    notify_all("modified todoitem", this, {during_load: false})
+
+}
+
+'package Events <<Rectangle>> {
+  class deleted_todoitem  <<event>> << (E,orchid) >> #Tomato {}
+  class app_model_changed  <<event>> << (E,orchid) >> #LimeGreen {}
+  class modified_todoitem  <<event>> << (E,orchid) >> #DeepSkyBlue {}
+  class filter_changed  <<event>> << (E,orchid) >> #Sienna {}
+'}
+
+
+
+App <.. deleted_todoitem #Tomato
+App --> app_model_changed #LimeGreen : App \n sends * \n<b><color:LimeGreen>app_model_changed</color></b> event \n during add, delete
+App --> modified_todoitem #DeepSkyBlue : App \n sends * \n <b><color:DeepSkyBlue>modified_todoitem</color></b> \n during load
+
+
+ControllerTodoItem <.. modified_todoitem #DeepSkyBlue
+ControllerTodoItem <.. deleted_todoitem #Tomato
+ControllerTodoItem <.. filter_changed #Sienna
+
+ControllerFooter <.. app_model_changed #LimeGreen
+ControllerFooter <.. modified_todoitem #DeepSkyBlue
+ControllerFooter --> filter_changed #Sienna : ControllerFooter \n sends * \n <b><color:Sienna>filter_changed</color></b> \n when users clicks
+
+TodoItem --> modified_todoitem #DeepSkyBlue : TodoItem \n sends * \n <b><color:DeepSkyBlue>modified_todoitem</color></b>
+TodoItem --> deleted_todoitem #Tomato : TodoItem \n sends * \n <b><color:Tomato>deleted_todoitem</color></b>
+
+            
+
+
+' CUSTOM
+
+
+
+
+
+
+
+center footer Generated by GitUml www.gituml.com
+
+class App {
+	constructor()
+    add()
+    delete()
+    ---
+  
+    method("constructor", "")
+
+    Event wiring - listening for these events ocurring in the system
+    upon receiving this event, (event) => { this.delete(event.detail.from) })
+
+    LISTEN << <color:Tomato>deleted_todoitem</color>
+
+    ```
+    document.addEventListener("deleted todoitem", 
+    ```
+
+    method("add", "")
+    
+    will tell e.g. footer controller to update displayed count
+    
+    BROADCAST >> <color:LimeGreen>app_model_changed</color>
+      
+    ```
+    notify_all("app model changed", this)
+    ```
+  
+    method("delete", "")
+    
+    called as a result of listening to the <color:Tomato>deleted_todoitem</color> event
+    will now tell e.g. footer controller to update displayed count
+
+    BROADCAST >> <color:LimeGreen>app_model_changed</color>
+      
+    ```
+    notify_all("app model changed", this)
+    ```
+        
+  	method("Load", "")
+  
+    all todo item controllers listen for and will receive this <color:DeepSkyBlue>modified_todoitem</color>
+    no listeners except root debug listener, displaying the model debug view ("app model changed")
+
+    BROADCAST >> <color:DeepSkyBlue>modified_todoitem</color>
+    BROADCAST >> <color:LimeGreen>app_model_changed</color>
+      
+  	```
+    notify_all("modified todoitem", this, options)
+    notify_all("app model changed", this)
+	```
+  }
+
+class ControllerTodoItem {
+  
+    
+    method("constructor", "")
+
+  	The modified and deleted events will come from todo model item, whereas the <color:Sienna>filter changed</color>
+    event will come from the footer controller.
+  
+    LISTEN << <color:DeepSkyBlue>modified_todoitem</color>
+    LISTEN << <color:Tomato>deleted_todoitem</color>
+    LISTEN << <color:Sienna>filter_changed</color>
+    
+    ```
+    document.addEventListener("modified todoitem", this.notify_func)
+    document.addEventListener("deleted todoitem", this.notify_func)
+    document.addEventListener("filter changed", this.notify_func)
+    ```
+  
+    method("_delete_gui", "")
+
+  	delete the GUI element and unwire any listeners to this controller
+  	UNLISTEN <<X <color:DeepSkyBlue>modified_todoitem</color>
+  	UNLISTEN <<X <color:Tomato>deleted_todoitem</color>
+  	UNLISTEN <<X <color:Sienna>filter_changed</color>
+  
+    ```
+    document.removeEventListener("modified todoitem", this.notify_func, false)
+    document.removeEventListener("deleted todoitem", this.notify_func, false)
+    document.removeEventListener("filter changed", this.notify_func, false)
+    ```
+  
+    method("notify", "event")
+
+  	Listened for events end up here. <<
+    Checks for event.type and performs what is required.
+  
+    Note: this method is not called as a result of the gui events, but as a 
+    result of listening to internal events
+
+  	```
+    if (event.type == "modified todoitem" ... // <color:DeepSkyBlue>modified_todoitem</color>
+    else if (event.type == "deleted todoitem" ...  // <color:Tomato>deleted_todoitem</color>
+	else if (event.type == "filter_changed") ...  // <color:Sienna>filter_changed</color>
+  	```
+  
+  }
+
+class ControllerFooter {
+    
+    method("constructor", "")
+
+    LISTEN << <color:LimeGreen>app_model_changed</color>
+    LISTEN << <color:DeepSkyBlue>modified_todoitem</color>
+  
+    ```
+    document.addEventListener("app model changed", (event) => { this.notify(event) })
+    document.addEventListener("modified todoitem", (event) => { this.notify(event) })
+    ```
+
+  	method("filter_click", "e")
+
+	this broadcast goes to all the todoitem controllers
+    
+    BROADCAST >> <color:Sienna>filter_changed</color>
+ 
+    ```
+  	notify_all("filter changed", this, {'filter': this.filter});
+	```
+  
+  	method("notify", "event")
+  
+    Renders the footer area, incl. count of number of todo items yet to complete.
+
+}
+
+class TodoItem {
+
+    method("delete", "")
+  
+    BROADCAST >> <color:Tomato>deleted_todoitem</color>
+  
+    ```
+    notify_all("deleted todoitem", this)
+    ```
+
+    method("dirty", "")
+
+  	Called when modify any of the todo item's attributes 
+    e.g. 'completed' or 'title'
+  
+    BROADCAST >> <color:DeepSkyBlue>modified_todoitem</color>
+  
+    ```
+    notify_all("modified todoitem", this, {during_load: false})
+    ```
+
+}
+
+'package Events <<Rectangle>> {
+  class deleted_todoitem  <<event>> << (E,orchid) >> #Tomato {}
+  class app_model_changed  <<event>> << (E,orchid) >> #LimeGreen {}
+  class modified_todoitem  <<event>> << (E,orchid) >> #DeepSkyBlue {}
+  class filter_changed  <<event>> << (E,orchid) >> #Sienna {}
+'}
+
+
+
+App <.. deleted_todoitem #Tomato
+App --> app_model_changed #LimeGreen : App \n sends * \n<b><color:LimeGreen>app_model_changed</color></b> event \n during add, delete
+App --> modified_todoitem #DeepSkyBlue : App \n sends * \n <b><color:DeepSkyBlue>modified_todoitem</color></b> \n during load
+
+
+ControllerTodoItem <.. modified_todoitem #DeepSkyBlue
+ControllerTodoItem <.. deleted_todoitem #Tomato
+ControllerTodoItem <.. filter_changed #Sienna
+
+ControllerFooter <.. app_model_changed #LimeGreen
+ControllerFooter <.. modified_todoitem #DeepSkyBlue
+ControllerFooter --> filter_changed #Sienna : ControllerFooter \n sends * \n <b><color:Sienna>filter_changed</color></b> \n when users clicks
+
+TodoItem --> modified_todoitem #DeepSkyBlue : TodoItem \n sends * \n <b><color:DeepSkyBlue>modified_todoitem</color></b>
+TodoItem --> deleted_todoitem #Tomato : TodoItem \n sends * \n <b><color:Tomato>deleted_todoitem</color></b>
+

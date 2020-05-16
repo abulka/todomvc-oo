@@ -12,7 +12,7 @@ Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
 
 This project fully implements the TodoMVC specification. It is implemented without a framework, using plain Object Oriented programming + the **MVCA** architectural design pattern:
 
-Whilst the MVC (Model View Controller) pattern is commonly and glowingly referred to, implementations can vary widely. Most documentation on MVC, including the official [wikipedia article](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) is vague on definitions and details.  This TodoMVC-OO project uses the MVCA pattern (formerly the [MGM](docs_root/mgm.md) pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
+Whilst the MVC (Model View Controller) pattern is commonly and glowingly referred to, implementations can vary widely. Most documentation on MVC, including the official [wikipedia article](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) is vague on definitions and details.  This TodoMVC-OO project uses the MVCA pattern (formerly the [MGM](docs_other/mgm.md) pattern) which is a clear and unambiguous interpretation of MVC, with the following key ideas:
 
 - The **View** means a modern GUI framework, and therefore is usually already available to be used by the programmer.
 - One or more **Controllers** mediate between the View and the rest of the Application, listening for GUI events. Nobody else knows about the View.
@@ -22,34 +22,11 @@ Whilst the MVC (Model View Controller) pattern is commonly and glowingly referre
 
 Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
-![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs_root/plantuml/mvca-controller-pov/mvca-controller-pov.svg?sanitize=true)
+![controller point of view](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/docs_other/plantuml/mvca-architecture-v2?sanitize=true)
 
 ## MVCA In Detail
 
-Let's go through the four parts of the MVCA pattern, which is precisely adhered to by this TodoMVC-OO implementation. Actually there is a fifth important part - the eventing system - which glues it all together - let's look at that first.
-
-### Eventing System
-
-Eventing is an important consideration in decoupling models from controllers, and to facilitate abstract communication between objects.
-
-Two eventing systems should be distinguished:
-- **GUI native**: The native eventing system of the GUI Framework e.g. DOM `.on('click', ...`
-- **Internal**: Your choice of an application system wide eventing system e.g. Publish-Subscribe e.g. `document.addEventListener("hello", (event) => { ... })`
-
-Both eventing systems are used in the TodoMVC-OO implementation. As you can see in the diagram above, DOM eventing reaches the Controllers, but no further. The remaining eventing is internal.
-
-Here is a [Literate Code Map](https://github.com/abulka/lcodemaps) of the event flow of TodoMVC-OO. Events are reified as coloured objects, each different event gets a different colour. 
-
-![todomvc_events](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_root/images/todomvc_events.svg?sanitize=true)
-*(click on diagram for more detail and the ability to zoom)*
-
-The eventing pattern depicted here is [Publisher-Subscriber](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) where real event objects are 'broadcast' into the ether/event bus/system/whatever - allowing any code in the system to subscribe and respond - the point is, the code emitting the event does not have references to receiver object/methods.
-
-> Note: The Javascript built in Publisher-Subscriber eventing approach is more flexible and powerful than the [Observer](https://en.wikipedia.org/wiki/Observer_pattern) pattern since the Observer pattern *requires observers to know about* and subscribe to Subject objects, which is not always possible or convenient. More dicussion on the differences can be found [in this article](https://hackernoon.com/observer-vs-pub-sub-pattern-50d3b27f838c) and on [Stackoverflow](https://stackoverflow.com/questions/6439512/difference-between-observer-pattern-and-event-driven-approach). Thus we use Publisher-Subscriber eventing (event name -> object method) rather than the traditional Observer pattern (object -> object method) approach. 
-
-I used to be a fan of the traditional Observer pattern but in my later years find the Publisher-Subscriber pattern to be simpler and more powerful - plus Publisher-Subscriber is built into Javascript you simply `document.addEventListener("hello", (event) => { ... })` to listen and `document.dispatchEvent(new CustomEvent(event_name, { detail: {from: from, data: data } }))` to notify all.
-
-The Javascript built in Publisher-Subscriber eventing system is used as the internal eventing system of this TodoMVC-OO implementation.
+Let's go through the four parts of the MVCA pattern, which is precisely adhered to by this TodoMVC-OO implementation. Actually there is a fifth important part - the eventing system - which glues it all together - let's look at the Model first.
 
 ### Model
 
@@ -60,45 +37,45 @@ By traditional, I mean the Model does not know about anything else except perhap
 ```javascript
 
 class TodoItem {
-	constructor(title, id, completed) {
-		this._title = title == undefined ? "" : title;
-		this._completed = completed == undefined ? false : completed;
-		this.id = id == undefined ? util.uuid() : id;  // no getter/setter needed
-	}
+    constructor(title, id, completed) {
+        this._title = title == undefined ? "" : title;
+        this._completed = completed == undefined ? false : completed;
+        this.id = id == undefined ? util.uuid() : id;  // no getter/setter needed
+    }
 
-	get title() {
-		return this._title;
-	}
+    get title() {
+        return this._title;
+    }
 
-	set title(v) {
-		this._title = v;
-		this.dirty()
-	}
+    set title(v) {
+        this._title = v;
+        this.dirty()
+    }
 
-	get completed() {
-		return this._completed;
-	}
+    get completed() {
+        return this._completed;
+    }
 
-	set completed(v) {
-		this._completed = v;
-		this.dirty()
-	}
+    set completed(v) {
+        this._completed = v;
+        this.dirty()
+    }
 
-	get as_dict() {
-		return {
-			id: this.id,
-			title: this.title,
-			completed: this.completed
-		}
-	}
+    get as_dict() {
+        return {
+            id: this.id,
+            title: this.title,
+            completed: this.completed
+        }
+    }
 
-	delete() {
-		notify_all("deleted todoitem", this)
-	}
+    delete() {
+        notify_all("deleted todoitem", this)
+    }
 
-	dirty() {
-		notify_all("modified todoitem", this, {during_load: false})
-	}
+    dirty() {
+        notify_all("modified todoitem", this, {during_load: false})
+    }
 }
 ```
 
@@ -143,7 +120,7 @@ I feel the challenge of GUI architectures is to tame the role of Controller into
 
 In TodoMVC-OO we have a Controller class `ControllerTodoItem` and instantiate one per TodoItem model instance. That's arguably a lot of controller instances, but this approach allows fine grained updating of the DOM. In contrast, the Jquery version of TodoMVC rebuilds the entire todo DOM on each refresh - something that might become inefficient for non-toy apps.
 
-In TodoMVC-OO we have a Controller class `ControllerHeader` for looking after the header part of the GUI and `ControllerFooter` for looking after the footer area, which is where the `filter` buttons are and the count of uncompleted todo items is displayed. The number of Controllers you create is up to you: one Controller per GUI element for fine grained updates, a more relaxed approach of one Controller per related group of GUI elements (my preference) or arguably even one Controller for all GUI elements! I go into more academic detail on this topic in my [MGM](docs_root/mgm.md) pattern paper.
+In TodoMVC-OO we have a Controller class `ControllerHeader` for looking after the header part of the GUI and `ControllerFooter` for looking after the footer area, which is where the `filter` buttons are and the count of uncompleted todo items is displayed. The number of Controllers you create is up to you: one Controller per GUI element for fine grained updates, a more relaxed approach of one Controller per related group of GUI elements (my preference) or arguably even one Controller for all GUI elements! I go into more academic detail on this topic in my [MGM](docs_other/mgm.md) pattern paper.
 
 By clearly defining what a mediating Controller is, and organising our app into different sensible controllers, we tame our design and prevent it from turning into spaghetti. 
 
@@ -168,7 +145,33 @@ The role of the Application is also important and often overlooked/undocumented.
 
 Whilst it is fine to wire Controllers directly to model instances, you will also need the Application to hold "view state" e.g. like the state of the active "filter" in this Todo application.  The Application is a centralised class, a kind of hub - to hold higher level business logic and more complex model manipulations. The Application class's functionality can of course be composed of smaller pieces as software grows more complex but a class called `Application` should always still exist.
 
-#### Bootstrapping
+### Eventing System
+
+Eventing is an important consideration in decoupling models from controllers, and to facilitate abstract communication between objects.
+
+Two eventing systems should be distinguished:
+- **GUI native**: The native eventing system of the GUI Framework e.g. DOM `.on('click', ...`
+- **Internal**: Your choice of an application system wide eventing system e.g. Publish-Subscribe e.g. `document.addEventListener("hello", (event) => { ... })`
+
+Both eventing systems are used in the TodoMVC-OO implementation. As you can see in the diagram above, DOM eventing reaches the Controllers, but no further. The remaining eventing is internal.
+
+Here is a [Literate Code Map](https://github.com/abulka/lcodemaps) of the event flow of TodoMVC-OO. Events are reified as coloured objects, each different event gets a different colour. 
+
+![todomvc_events](https://raw.githubusercontent.com/abulka/todomvc-oo/master/out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg?sanitize=true)
+*(click on diagram for more detail and the ability to zoom)*
+
+> Note: the above image was generated using GitUML, which can reverse engineer Javascript source code into UML style diagrams - see [diagram 134](https://www.gituml.com/viewz/134).
+
+The eventing pattern depicted here is [Publisher-Subscriber](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) where real event objects are 'broadcast' into the ether/event bus/system/whatever - allowing any code in the system to subscribe and respond - the point is, the code emitting the event does not have references to receiver object/methods.
+
+> Note: The Javascript built in Publisher-Subscriber eventing approach is more flexible and powerful than the [Observer](https://en.wikipedia.org/wiki/Observer_pattern) pattern since the Observer pattern *requires observers to know about* and subscribe to Subject objects, which is not always possible or convenient. More dicussion on the differences can be found [in this article](https://hackernoon.com/observer-vs-pub-sub-pattern-50d3b27f838c) and on [Stackoverflow](https://stackoverflow.com/questions/6439512/difference-between-observer-pattern-and-event-driven-approach). Thus we use Publisher-Subscriber eventing (event name -> object method) rather than the traditional Observer pattern (object -> object method) approach. 
+
+I used to be a fan of the traditional Observer pattern but in my later years find the Publisher-Subscriber pattern to be simpler and more powerful - plus Publisher-Subscriber is built into Javascript you simply `document.addEventListener("hello", (event) => { ... })` to listen and `document.dispatchEvent(new CustomEvent(event_name, { detail: {from: from, data: data } }))` to notify all.
+
+The Javascript built in Publisher-Subscriber eventing system is used as the internal eventing system of this TodoMVC-OO implementation.
+
+
+## Application Bootstrapping
 
 The bootstrapping of the system should be done in something other than the Application class itself.  The bootstrapping in TodoMVC-OO is done in `app.js` which creates an instance of Application which is defined in `application.js`.
 
@@ -220,13 +223,11 @@ let config = {
 
 Of course the Controller itself will have further references to View DOM elements, however these references should be based on searching *within* the outer DOM element passed to the Controller - thus achieving some degree of 'component-isation' and re-use. For example the same Controller could be used to look after different DOM elements with different element id's.
 
-## TodoMVC-OO
+## TodoMVC-OO Conclusion
 
 This project fully implements the TodoMVC specification and is implemented without a framework, using plain Object Oriented programming + MVCA architectural design pattern, as described above.
 
 Running demo [here](https://abulka.github.io/todomvc-oo/index.html).
-
-![mvc-a-architecture](https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_root/images/mvca-architecture-gituml.svg?sanitize=true)
 
 ### Improvements
 
@@ -249,8 +250,8 @@ In this implementation, I notice that footer renders too early rather than right
 ### Articles
 
 <!-- - [Medium article]()  (coming in Apr 2020) -->
-- [MGM](docs_root/mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
-- TodoECS - Entity Component System implementation of TodoMVC *(coming mid 2020)*
+- [MGM](docs_other/mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
+- [TodoMVC-ECS](https://github.com/abulka/todomvc-ecs) - Entity Component System implementation of TodoMVC
 
 <!-- ### Support
 
@@ -261,4 +262,4 @@ In this implementation, I notice that footer renders too early rather than right
 
 Created by [Andy Bulka](http://andypatterns.com)
 
-Note: This project is not not *officially* part of the [TodoMVC project](http://todomvc.com/) - as it is does not use a MVC framework library, nor does it meet the criterion of "having a community" around it.  On the other hand, perhaps a pattern is equivalent enough to a framework - after all there is a plain Javascript TodoMVC implementation officially available using ad-hoc techniques. Plus, there has been a "community" around the Object Oriented MVC pattern for decades now - hasn't there? 😉
+Note: This project is not not officially part of the [TodoMVC project](http://todomvc.com/) - as it is does not use a MVC framework library, nor does it meet the criterion of "having a community" around it.  On the other hand, perhaps a pattern is equivalent enough to a framework - after all there is a plain Javascript TodoMVC implementation officially available using ad-hoc techniques. Plus, there has been a "community" around the Object Oriented MVC pattern for decades now - hasn't there? 😉
