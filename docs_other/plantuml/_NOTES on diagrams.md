@@ -13,8 +13,9 @@ The plantuml plugin should be configured to not create a subdir, otherwise there
 ## mvca-architecture-v2.puml
 
 - defined here
-- not on gituml
+- now on gituml https://www.gituml.com/viewz/181 
 - used as main diagram in readme article `out/docs_other/plantuml/mvca-architecture-v2.svg`
+- gituml version is copy and paste of this version, with diagram html containing this whole article added, so it looks great in view mode on gituml.
 
 ## mvca-architecture-v1-deprecated-gituml-136.puml 
 

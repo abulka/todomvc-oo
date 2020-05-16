@@ -18,7 +18,7 @@ Whilst the MVC (Model View Controller) pattern is commonly and glowingly referre
 - One or more **Controllers** mediate between the View and the rest of the Application, listening for GUI events. Nobody else knows about the View.
 - The **Model** is traditional data, may contain some business logic, and may broadcast events when its attributes change.
 - The **Application** owns the model(s), holds view state and contains some business logic methods.
-- An Eventing system is needed, traditionally Observer pattern but the stronger decoupling and the proper event objects of the Publisher-Subscriber pattern is preferred.
+- An **Eventing** system is needed, traditionally Observer pattern but the stronger decoupling and the proper event objects of the Publisher-Subscriber pattern is preferred.
 
 Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
