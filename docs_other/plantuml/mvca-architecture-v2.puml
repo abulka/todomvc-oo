@@ -63,7 +63,6 @@ class App  << (A,#FF7700) >> {
 note as User #white
     User
     <img:https://raw.githubusercontent.com/abulka/todomvc-oo/master/docs_other/images/mgm-pattern-user-facing-right.png>
-    <img:mgm-pattern-user-facing-right.png>
 end note
 
 

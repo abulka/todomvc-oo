@@ -24,6 +24,8 @@ Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all
 
 ![MVCA Architecture](https://github.com/abulka/todomvc-oo/raw/master/out/docs_other/plantuml/mvca-architecture-v2.svg?sanitize=true)
 
+![MVCA Architecture](https://abulka.github.io/todomvc-oo/images/mvca-architecture-v2.svg?sanitize=true)
+
 ## MVCA In Detail
 
 Let's go through the four parts of the MVCA pattern, which is precisely adhered to by this TodoMVC-OO implementation. Actually there is a fifth important part - the eventing system - which glues it all together - let's look at the Model first.
