@@ -3,6 +3,10 @@ DEST=docs
 
 cp -v index.html $DEST
 
+DIR=images
+cp -v out/docs_other/plantuml/mvca-architecture-v2.svg \
+$DEST/$DIR
+
 DIR=js
 cp -v js/app.js js/controllers.js js/model.js \
 js/observer_events.js js/util.js js/application.js \

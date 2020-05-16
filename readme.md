@@ -22,7 +22,10 @@ Whilst the MVC (Model View Controller) pattern is commonly and glowingly referre
 
 Thus MVCA simply means "**M**odel **V**iew **C**ontroller **A**pplication" - all four roles are necessary to any implementation.
 
-![MVCA Architecture](https://github.com/abulka/todomvc-oo/raw/master/out/docs_other/plantuml/mvca-architecture-v2.svg?sanitize=true)
+<!-- ![MVCA Architecture](https://github.com/abulka/todomvc-oo/raw/master/out/docs_other/plantuml/mvca-architecture-v2.svg?sanitize=true) 
+    this version doesn't render the internal images (which are base64 encoded) due to "because it violates the following Content Security Policy directive:..."
+    but serving the same image via github.io works ok.
+-->
 
 ![MVCA Architecture](https://abulka.github.io/todomvc-oo/images/mvca-architecture-v2.svg?sanitize=true)
 
