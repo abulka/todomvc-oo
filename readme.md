@@ -254,21 +254,20 @@ In this implementation, I notice that footer renders too early rather than right
 
 ### Resources
 
-- [GUI Showdown MVCA](https://abulka.github.io/gui-showdown/main_mvca.html) another example of an app implemented using the MVCA architecture (Javascript, open source)
 - Official [TodoMVC project](http://todomvc.com/) with other TodoMVC implementations (e.g. Vue, Angular, React etc.)
-- [GitUML](https://www.gituml.com) diagramming used for this project
-- [Literate Code Mapping](https://github.com/abulka/lcodemaps) diagramming used for this project
-
+- [TodoMVC-ECS](https://github.com/abulka/todomvc-ecs) - My "Entity Component System" implementation of TodoMVC
+- [GUI Showdown MVCA](https://abulka.github.io/gui-showdown/main_mvca.html) another example of an app implemented using the MVCA architecture (Javascript, open source)
+- [MGM](docs_other/mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
 <!-- - [Used by](https://github.com/abulka/todomvc-oo) -->
 <!-- - [Website](https://www.gituml.com/editz/134) -->
 <!-- - [Blog](https://www.gituml.com/editz/136) -->
 <!-- - [FAQ](https://www.gituml.com/editz/136) -->
 
-### Articles
+### Diagramming
 
+- [GitUML](https://www.gituml.com) diagramming used for this project
+- [Literate Code Mapping](https://github.com/abulka/lcodemaps) diagramming used for this project
 <!-- - [Medium article]()  (coming in Apr 2020) -->
-- [MGM](docs_other/mgm.md) pattern (older version of MVCA, presented at a Patterns Conference)
-- [TodoMVC-ECS](https://github.com/abulka/todomvc-ecs) - Entity Component System implementation of TodoMVC
 
 <!-- ### Support
 
