@@ -32,3 +32,14 @@ The plantuml plugin should be configured to not create a subdir, otherwise there
     - the refine uml plantuml markdown
 - there are refs to github files in the gituml version, which are captured because we copied the generated uml plantuml markdown
 - diagram used in readme article, however I use the gituml generated svg which is copied into `out/copied-from-gituml`
+
+# Late note
+
+Due to an issue with github rendering embedded images inside svg, I copy and serve my svg via github.io rather than raw.githubusercontent.com, hence why I copy these into `docs` via the `cpdeploy` script.
+
+```
+out/docs_other/plantuml/mvca-architecture-v2.svg \
+out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg \
+```
+
+Note the second file doesn't need to be served from there, but there were some browser console warnings so I played it safe.

@@ -4,7 +4,9 @@ DEST=docs
 cp -v index.html $DEST
 
 DIR=images
-cp -v out/docs_other/plantuml/mvca-architecture-v2.svg \
+cp -v \
+out/docs_other/plantuml/mvca-architecture-v2.svg \
+out/copied-from-gituml/todomvc-oo-event-flow-gituml-134.svg \
 $DEST/$DIR
 
 DIR=js
